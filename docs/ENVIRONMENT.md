@@ -1,0 +1,41 @@
+# Vionsys CMS: Environment Variables Configuration
+
+This file outlines the configuration variables needed in a local `.env` file to run the CMS.
+
+Create a `.env` file at the root of the `cms` folder:
+
+```bash
+# Database connections URL
+DATABASE_URL="postgresql://postgres:password@localhost:5432/vionsys_cms?schema=public"
+
+# Session JWT authentication secret key
+JWT_SECRET="vionsys-cms-jwt-super-secret-key-2026"
+
+# Frontend website domains for URL previews & webhooks
+VIONSYS_FRONTEND_BASE_URL="https://vionsys.com"
+CMS_BASE_URL="https://cms.vionsys.com"
+
+# Revalidation Webhook secrets
+FRONTEND_REVALIDATE_URL="https://vionsys.com/api/revalidate"
+FRONTEND_REVALIDATE_SECRET="vionsys-cms-revalidate-secret-2026"
+```
+
+## Running Locally
+
+1. Set up your Postgres database and configure `DATABASE_URL`.
+2. Generate Prisma Client bindings:
+   ```bash
+   npx prisma generate
+   ```
+3. Push the database models:
+   ```bash
+   npx prisma db push
+   ```
+4. Start Next.js development server:
+   ```bash
+   npm run dev
+   ```
+5. Open your browser and navigate to `http://localhost:3000`. You can log in using:
+   - Email: `admin@vionsys.com`
+   - Password: `admin123`
+   (The login route will auto-create this account on first login attempt if it doesn't exist).

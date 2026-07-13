@@ -1,0 +1,117 @@
+@import "tailwindcss";
+@import "../styles/tokens.css";
+
+:root {
+  --background: #fafafa;
+  --foreground: #1e293b;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-manrope), sans-serif;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Headings font family */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-outfit), sans-serif;
+}
+
+/* Global font weight override: max weight 500 (medium) */
+h1, h2, h3, h4, h5, h6, strong, b, th, dt, optgroup, 
+.font-semibold, .font-bold, .font-extrabold, .font-black,
+[class*="font-semibold"], [class*="font-bold"], [class*="font-extrabold"], [class*="font-black"] {
+  font-weight: 500 !important;
+}
+
+/* Arbitrary text utility overrides (+2px) */
+.text-\[8px\] { font-size: 10px !important; }
+.text-\[9px\] { font-size: 11px !important; }
+.text-\[10px\] { font-size: 12px !important; }
+.text-\[11px\] { font-size: 13px !important; }
+.text-\[14px\] { font-size: 16px !important; }
+.text-\[15px\] { font-size: 17px !important; }
+
+/* Premium Focus rings */
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+  transition: all var(--animate-duration-fast) var(--ease-standard);
+}
+
+/* General transitions */
+.transition-standard {
+  transition: all var(--animate-duration-normal) var(--ease-standard);
+}
+
+/* Subtle Press micro-interaction */
+.active-press:active {
+  transform: scale(0.98) !important;
+  transition: transform var(--animate-duration-instant) var(--ease-press) !important;
+}
+
+/* Custom Scrollbar for modern dashboards */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Editor.js Block Overrides */
+.editorjs-wrapper .codex-editor {
+  font-size: 1.075rem; /* was 0.95rem (~15.2px), now 17.2px (+2px) */
+}
+
+.editorjs-wrapper .ce-paragraph {
+  line-height: 1.7;
+  color: #334155; /* slate-700 */
+  margin-bottom: 1.25rem;
+}
+
+.editorjs-wrapper .ce-header {
+  font-weight: 500 !important; /* limited to 500 (medium) */
+  color: #0f172a; /* slate-900 */
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.025em;
+}
+
+.editorjs-wrapper h2.ce-header { font-size: 1.75rem; } /* was 1.625rem (~26px), now 28px (+2px) */
+.editorjs-wrapper h3.ce-header { font-size: 1.5rem; } /* was 1.375rem (~22px), now 24px (+2px) */
+.editorjs-wrapper h4.ce-header { font-size: 1.275rem; } /* was 1.15rem (~18.4px), now 20.4px (+2px) */
+
+.editorjs-wrapper ul.ce-block {
+  list-style-type: disc !important;
+  padding-left: 1.5rem !important;
+}
+
+.editorjs-wrapper ol.ce-block {
+  list-style-type: decimal !important;
+  padding-left: 1.5rem !important;
+}
+
+/* Reduced Motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-delay: -1ms !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    background-attachment: initial !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+  }
+}
+

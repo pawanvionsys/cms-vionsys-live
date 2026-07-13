@@ -1,0 +1,330 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  SUPER_ADMIN
+  CONTENT_MANAGER
+  EDITOR
+  VIEWER
+}
+
+enum ContentStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum EngagementType {
+  PROJECT
+  RETAINER
+  STAFF_AUGMENTATION
+  PRODUCT_BUILD
+}
+
+enum ClientApprovalStatus {
+  APPROVED
+  PENDING
+  ANONYMOUS
+}
+
+model User {
+  id           String        @id @default(uuid()) @map("_id")
+  email        String        @unique
+  passwordHash String
+  name         String
+  role         Role          @default(EDITOR)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  blogPosts    BlogPost[]
+  caseStudies  CaseStudy[]
+  logs         ActivityLog[]
+}
+
+model BlogPost {
+  id                 String           @id @default(uuid()) @map("_id")
+  title              String
+  slug               String           @unique
+  contentJson        Json
+  contentHtml        String
+  contentText        String
+  excerpt            String
+  featuredImage      String?
+  featuredImageAlt   String?
+  isFeatured         Boolean          @default(false)
+  status             ContentStatus    @default(DRAFT)
+  publishedAt        DateTime?
+  scheduledAt        DateTime?
+  guestAuthor        String?
+  internalNote       String?
+  serviceIds         String[]         // Services related
+  caseStudyIds       String[]         // Case studies related
+  contentBriefUrl    String?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  
+  // Relations
+  authorId           String
+  author             User             @relation(fields: [authorId], references: [id])
+  categoryId         String?
+  category           Category?        @relation(fields: [categoryId], references: [id])
+  tags               Tag[]            @relation(fields: [tagIds], references: [id])
+  tagIds             String[]
+  seoMeta            SeoMeta?
+  aeoGeoMeta         AeoGeoMeta?
+  schemaSettings     SchemaSettings?
+  versions           VersionHistory[]
+}
+
+model CaseStudy {
+  id                     String               @id @default(uuid()) @map("_id")
+  title                  String
+  slug               String           @unique
+  clientName             String
+  anonymizeClient        Boolean              @default(false)
+  clientLogo             String?
+  industry               String
+  engagementType         EngagementType       @default(PROJECT)
+  publishedAt            DateTime?
+  scheduledAt            DateTime?
+  heroImage              String?
+  heroImageAlt           String?
+  excerpt                String
+  clientApprovalStatus   ClientApprovalStatus @default(PENDING)
+  isFeatured             Boolean              @default(false)
+  serviceIds             String[]
+  blogPostIds            String[]
+  internalNote           String?
+  challengeHtml          String
+  challengeJson          Json
+  approachHtml           String
+  approachJson           Json
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  
+  // Testimonial
+  testimonialQuote       String?
+  testimonialName        String?
+  testimonialDesignation String?
+  testimonialCompany     String?
+  testimonialImage       String?
+
+  // CTA
+  ctaHeading             String?
+  ctaBody                String?
+  ctaButtonLabel         String?
+  ctaButtonUrl           String?
+
+  // Relations
+  authorId               String
+  author                 User                 @relation(fields: [authorId], references: [id])
+  resultStats            ResultStat[]
+  processSteps           ProcessStep[]
+  mediaGallery           MediaGalleryItem[]
+  seoMeta                SeoMeta?
+  aeoGeoMeta             AeoGeoMeta?
+  schemaSettings         SchemaSettings?
+  versions           VersionHistory[]
+  faqs                   CaseStudyFaq[]
+}
+
+model CaseStudyFaq {
+  id          String    @id @default(uuid()) @map("_id")
+  caseStudyId String
+  caseStudy   CaseStudy @relation(fields: [caseStudyId], references: [id], onDelete: Cascade)
+  question    String
+  answer      String
+  position    Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+
+model ResultStat {
+  id          String    @id @default(uuid()) @map("_id")
+  caseStudyId String
+  caseStudy   CaseStudy @relation(fields: [caseStudyId], references: [id], onDelete: Cascade)
+  value       String
+  label       String
+  description String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model ProcessStep {
+  id          String    @id @default(uuid()) @map("_id")
+  caseStudyId String
+  caseStudy   CaseStudy @relation(fields: [caseStudyId], references: [id], onDelete: Cascade)
+  title       String
+  description String
+  icon        String?
+  position    Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model MediaGalleryItem {
+  id          String    @id @default(uuid()) @map("_id")
+  caseStudyId String
+  caseStudy   CaseStudy @relation(fields: [caseStudyId], references: [id], onDelete: Cascade)
+  imagePath   String
+  caption     String?
+  alt         String?
+  position    Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model SeoMeta {
+  id                String     @id @default(uuid()) @map("_id")
+  blogPostId        String?    @unique
+  blogPost          BlogPost?  @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  caseStudyId       String?    @unique
+  caseStudy         CaseStudy? @relation(fields: [caseStudyId], references: [id], onDelete: Cascade)
+  title             String
+  description       String
+  focusKeyword      String
+  secondaryKeywords String[]
+  canonicalUrl      String?
+  index             Boolean    @default(true)
+  follow            Boolean    @default(true)
+  ogTitle           String?
+  ogDescription     String?
+  ogImage           String?
+  twitterCardType   String     @default("summary_large_image")
+}
+
+model AeoGeoMeta {
+  id                 String     @id @default(uuid()) @map("_id")
+  blogPostId         String?    @unique
+  blogPost           BlogPost?  @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  caseStudyId        String?    @unique
+  caseStudy          CaseStudy? @relation(fields: [caseStudyId], references: [id], onDelete: Cascade)
+  directAnswerPrompt String?
+  snippetCandidate   String? // max 50 words
+  peopleAlsoAsk      Json?      // list of Q&A objects
+  semanticSummary    String?
+  keyTakeaways       String[]
+  statsSources       Json?      // list of sources
+  authorCredibility  String?
+  reviewedBy         String?
+  allowAiCrawler     Boolean    @default(true)
+}
+
+model SchemaSettings {
+  id               String     @id @default(uuid()) @map("_id")
+  blogPostId       String?    @unique
+  blogPost         BlogPost?  @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  caseStudyId      String?    @unique
+  caseStudy        CaseStudy? @relation(fields: [caseStudyId], references: [id], onDelete: Cascade)
+  type             String     // e.g. "BlogPosting", "CaseStudy"
+  customSchemaJson Json?      // Overrides/additions
+}
+
+model MediaAsset {
+  id           String       @id @default(uuid()) @map("_id")
+  filename     String
+  filepath     String
+  url          String
+  optimizedUrl String?
+  size         Int
+  mimeType     String
+  width        Int?
+  height       Int?
+  alt          String?
+  caption      String?
+  tags         String[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  folderId     String?
+  folder       MediaFolder? @relation(fields: [folderId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model MediaFolder {
+  id        String       @id @default(uuid()) @map("_id")
+  name      String
+  parentId  String?
+  parent    MediaFolder? @relation("SubFolders", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children  MediaFolder[] @relation("SubFolders")
+  path      String       @unique
+  assets    MediaAsset[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model Redirect {
+  id         String   @id @default(uuid()) @map("_id")
+  fromPath   String   @unique
+  toPath     String
+  statusCode Int      @default(301)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Category {
+  id          String     @id @default(uuid()) @map("_id")
+  name        String     @unique
+  slug        String     @unique
+  description String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  posts       BlogPost[]
+}
+
+model Tag {
+  id        String     @id @default(uuid()) @map("_id")
+  name      String     @unique
+  slug      String     @unique
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  posts     BlogPost[] @relation(fields: [postIds], references: [id])
+  postIds   String[]
+}
+
+model SiteSettings {
+  id        String   @id @default(uuid()) @map("_id")
+  orgName   String   @default("Vionsys")
+  orgLogo   String?
+  orgUrl    String   @default("https://vionsys.com")
+  sameAs    String[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ApiKey {
+  id        String    @id @default(uuid()) @map("_id")
+  name      String
+  keyHash   String    @unique
+  role      Role      @default(VIEWER)
+  expiresAt DateTime?
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid()) @map("_id")
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  action    String
+  details   String?
+  createdAt DateTime @default(now())
+}
+
+model VersionHistory {
+  id          String     @id @default(uuid()) @map("_id")
+  blogPostId  String?
+  blogPost    BlogPost?  @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  caseStudyId String?
+  caseStudy   CaseStudy? @relation(fields: [caseStudyId], references: [id], onDelete: Cascade)
+  contentJson Json
+  contentHtml String
+  authorId    String
+  createdAt   DateTime   @default(now())
+}

@@ -1,0 +1,72 @@
+@theme {
+  /* Radius Tokens */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-xxl: 24px;
+
+  /* Premium Shadows */
+  --shadow-subtle: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+  --shadow-premium: 0 4px 12px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02);
+  --shadow-overlay: 0 12px 24px -4px rgba(0, 0, 0, 0.05), 0 4px 12px -2px rgba(0, 0, 0, 0.025);
+
+  /* Enterprise Blue Accent Scale */
+  --color-brand-50: #f0f7ff;
+  --color-brand-100: #e0effe;
+  --color-brand-200: #bae0fd;
+  --color-brand-300: #7cc7fb;
+  --color-brand-400: #38a9f8;
+  --color-brand-500: #2563eb;
+  --color-brand-600: #1d4ed8;
+  --color-brand-700: #1e40af;
+  --color-brand-800: #1e3a8a;
+  --color-brand-900: #172554;
+
+  /* Motion Durations */
+  --animate-duration-instant: 80ms;
+  --animate-duration-fast: 120ms;
+  --animate-duration-normal: 180ms;
+  --animate-duration-slow: 260ms;
+  --animate-duration-panel: 320ms;
+
+  /* Motion Easing Curves */
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-entrance: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-press: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Font Family Overrides */
+  --font-sans: var(--font-manrope), sans-serif;
+  --font-display: var(--font-outfit), sans-serif;
+
+  /* Restrict font weight to medium (500) maximum */
+  --font-weight-semibold: 500;
+  --font-weight-bold: 500;
+  --font-weight-extrabold: 500;
+  --font-weight-black: 500;
+
+  /* Redefining font sizes to be 2px larger everywhere */
+  --font-size-xs: 14px;      /* was 12px */
+  --font-size-sm: 16px;      /* was 14px */
+  --font-size-base: 18px;    /* was 16px */
+  --font-size-lg: 20px;      /* was 18px */
+  --font-size-xl: 22px;      /* was 20px */
+  --font-size-2xl: 26px;     /* was 24px */
+  --font-size-3xl: 32px;     /* was 30px */
+  --font-size-4xl: 38px;     /* was 36px */
+  --font-size-5xl: 50px;     /* was 48px */
+  --font-size-6xl: 62px;     /* was 60px */
+}
+
+:root {
+  /* Surface colors */
+  --bg-app: #fafafa;
+  --bg-surface: #ffffff;
+  --border-calm: #e2e8f0;
+  --border-light: #f1f5f9;
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+}
