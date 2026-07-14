@@ -47,9 +47,23 @@ export function editorJsToHtml(data: any): string {
         case 'list': {
           const tag = block.data.style === 'ordered' ? 'ol' : 'ul';
           const listClass = tag === 'ol' ? 'list-decimal pl-5 space-y-1 my-4' : 'list-disc pl-5 space-y-1 my-4';
-          const items = (block.data.items || [])
-            .map((item: string) => `<li>${item}</li>`)
-            .join('');
+          
+          const parseListItemsHtml = (items: any[]): string => {
+            return (items || [])
+              .map((item: any) => {
+                if (typeof item === 'string') {
+                  return `<li>${item}</li>`;
+                }
+                const content = item?.content || '';
+                const nested = item?.items && item.items.length > 0
+                  ? `<${tag} class="${listClass}">${parseListItemsHtml(item.items)}</${tag}>`
+                  : '';
+                return `<li>${content}${nested}</li>`;
+              })
+              .join('');
+          };
+
+          const items = parseListItemsHtml(block.data.items || []);
           return `<${tag} class="${listClass}">${items}</${tag}>`;
         }
           
@@ -129,8 +143,16 @@ export function editorJsToText(data: any): string {
     return '';
   }
 
-  const stripHtml = (html: string) => {
-    return html.replace(/<\/?[^>]+(>|$)/g, ' ').trim();
+  const stripHtml = (html: any): string => {
+    if (html === null || html === undefined) return '';
+    if (typeof html === 'object') {
+      if (typeof html.content === 'string') {
+        return stripHtml(html.content);
+      }
+      return '';
+    }
+    const str = String(html);
+    return str.replace(/<\/?[^>]+(>|$)/g, ' ').trim();
   };
 
   return parsed.blocks
@@ -141,8 +163,23 @@ export function editorJsToText(data: any): string {
         case 'quote':
           return stripHtml(block.data.text || '');
           
-        case 'list':
-          return (block.data.items || []).map((item: string) => stripHtml(item)).join(' ');
+        case 'list': {
+          const parseListItemsText = (items: any[]): string => {
+            return (items || [])
+              .map((item: any) => {
+                if (typeof item === 'string') {
+                  return stripHtml(item);
+                }
+                const content = stripHtml(item?.content || '');
+                const nested = item?.items && item.items.length > 0
+                  ? parseListItemsText(item.items)
+                  : '';
+                return `${content} ${nested}`.trim();
+              })
+              .join(' ');
+          };
+          return parseListItemsText(block.data.items || []);
+        }
           
         case 'table':
           return (block.data.content || [])

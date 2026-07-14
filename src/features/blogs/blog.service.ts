@@ -1,5 +1,6 @@
-import { prisma } from '../../lib/prisma';
+import { prisma, runTransactionWithRetry } from '../../lib/prisma';
 import { BlogFormInput } from './blog.validation';
+import { VersionHistory } from '@prisma/client';
 import { slugify } from '../../lib/slugify';
 import { calculateReadingTime } from '../../lib/reading-time';
 import { calculateReadability } from '../../lib/readability';
@@ -106,7 +107,7 @@ export class BlogService {
     const metaTitle = input.title.substring(0, 60);
     const metaDesc = input.excerpt ? input.excerpt.substring(0, 160) : input.title.substring(0, 160);
 
-    return prisma.$transaction(async (tx) => {
+    return runTransactionWithRetry(async (tx) => {
       const blog = await tx.blogPost.create({
         data: {
           title: input.title,
@@ -248,7 +249,7 @@ export class BlogService {
       updates.publishedAt = new Date();
     }
 
-    return prisma.$transaction(async (tx) => {
+    return runTransactionWithRetry(async (tx) => {
       const updated = await tx.blogPost.update({
         where: { id },
         data: updates,
@@ -327,7 +328,7 @@ export class BlogService {
         orderBy: { createdAt: 'desc' },
       });
       if (versions.length > 20) {
-        const toDeleteIds = versions.slice(20).map(v => v.id);
+        const toDeleteIds = versions.slice(20).map((v: VersionHistory) => v.id);
         await tx.versionHistory.deleteMany({
           where: { id: { in: toDeleteIds } },
         });

@@ -1,4 +1,4 @@
-import { prisma } from '../../lib/prisma';
+import { prisma, runTransactionWithRetry } from '../../lib/prisma';
 import { CaseStudyFormInput } from './case-study.validation';
 import { slugify } from '../../lib/slugify';
 import { AppError } from '../../lib/errors';
@@ -329,7 +329,7 @@ export class CaseStudyService {
       updates.publishedAt = new Date();
     }
 
-    return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    return runTransactionWithRetry(async (tx: Prisma.TransactionClient) => {
       // 1. Update main record
       const updated = await tx.caseStudy.update({
         where: { id },
