@@ -1,5 +1,6 @@
 import { prisma, runTransactionWithRetry } from '../../lib/prisma';
 import { BlogFormInput } from './blog.validation';
+import { VersionHistory } from '@prisma/client';
 import { slugify } from '../../lib/slugify';
 import { calculateReadingTime } from '../../lib/reading-time';
 import { calculateReadability } from '../../lib/readability';
@@ -327,7 +328,7 @@ export class BlogService {
         orderBy: { createdAt: 'desc' },
       });
       if (versions.length > 20) {
-        const toDeleteIds = versions.slice(20).map(v => v.id);
+        const toDeleteIds = versions.slice(20).map((v: VersionHistory) => v.id);
         await tx.versionHistory.deleteMany({
           where: { id: { in: toDeleteIds } },
         });
