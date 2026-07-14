@@ -1,4 +1,4 @@
-import { prisma } from '../../lib/prisma';
+import { prisma, runTransactionWithRetry } from '../../lib/prisma';
 import { BlogFormInput } from './blog.validation';
 import { slugify } from '../../lib/slugify';
 import { calculateReadingTime } from '../../lib/reading-time';
@@ -106,7 +106,7 @@ export class BlogService {
     const metaTitle = input.title.substring(0, 60);
     const metaDesc = input.excerpt ? input.excerpt.substring(0, 160) : input.title.substring(0, 160);
 
-    return prisma.$transaction(async (tx) => {
+    return runTransactionWithRetry(async (tx) => {
       const blog = await tx.blogPost.create({
         data: {
           title: input.title,
@@ -248,7 +248,7 @@ export class BlogService {
       updates.publishedAt = new Date();
     }
 
-    return prisma.$transaction(async (tx) => {
+    return runTransactionWithRetry(async (tx) => {
       const updated = await tx.blogPost.update({
         where: { id },
         data: updates,

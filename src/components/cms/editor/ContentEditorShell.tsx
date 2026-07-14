@@ -193,6 +193,7 @@ export function ContentEditorShell({
 
   // Track changes to trigger save
   const hasChangesRef = useRef(false);
+  const isSavingRef = useRef(false);
   const docDataRef = useRef({ docData, contentHtml, contentJson, contentText, seo, aeoGeo, schema });
 
   useEffect(() => {
@@ -226,6 +227,8 @@ export function ContentEditorShell({
 
   // --- SAVE OPERATION ---
   const handleSave = async (isDraft = true, statusOverride?: string) => {
+    if (isSavingRef.current) return;
+    isSavingRef.current = true;
     setIsSaving(true);
     setSaveStatus('saving');
     setErrorMessage(null);
@@ -289,6 +292,7 @@ export function ContentEditorShell({
       setErrorMessage(err.message || 'An error occurred during save.');
     } finally {
       setIsSaving(false);
+      isSavingRef.current = false;
     }
   };
 
