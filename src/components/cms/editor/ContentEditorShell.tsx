@@ -536,8 +536,6 @@ export function ContentEditorShell({
                       </select>
                     </div>
                   </div>
-                    </div>
-                  </div>
                 </div>
               )}
             </div>
@@ -863,7 +861,6 @@ export function ContentEditorShell({
               )}
             </div>
 
-            </div>
 
             {/* Bottom intelligence bar */}
             <ContentIntelligenceBar
@@ -934,7 +931,6 @@ export function ContentEditorShell({
               />
             </div>
 
-            </div>
 
             {/* Bottom intelligence statistics bar */}
             <ContentIntelligenceBar

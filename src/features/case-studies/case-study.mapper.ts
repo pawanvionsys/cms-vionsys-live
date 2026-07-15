@@ -80,10 +80,10 @@ export class CaseStudyMapper {
       testimonial: cs.testimonialQuote
         ? {
             quote: cs.testimonialQuote,
-            name: showClientName ? cs.testimonialName : 'Executive spokesperson',
+            name: cs.testimonialName || 'Executive spokesperson',
             designation: cs.testimonialDesignation,
             company: clientDisplayName,
-            avatarUrl: showClientName ? cs.testimonialImage : null
+            avatarUrl: cs.testimonialImage || null
           }
         : null,
 
