@@ -19,11 +19,16 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-outfit), sans-serif;
 }
 
-/* Global font weight override: max weight 500 (medium) */
-h1, h2, h3, h4, h5, h6, strong, b, th, dt, optgroup, 
-.font-semibold, .font-bold, .font-extrabold, .font-black,
-[class*="font-semibold"], [class*="font-bold"], [class*="font-extrabold"], [class*="font-black"] {
+/* Global font weight override: max weight 500 (medium) for headings, but let bold elements be bold */
+h1, h2, h3, h4, h5, h6, th, dt, optgroup {
   font-weight: 500 !important;
+}
+strong, b, .font-bold, .font-extrabold, .font-black,
+[class*="font-bold"], [class*="font-extrabold"], [class*="font-black"] {
+  font-weight: 750 !important;
+}
+.font-semibold, [class*="font-semibold"] {
+  font-weight: 600 !important;
 }
 
 /* Arbitrary text utility overrides (+2px) */

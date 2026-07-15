@@ -27,15 +27,14 @@ export class CaseStudyMapper {
       return null;
     }
 
-    const showClientName = !cs.anonymizeClient && cs.clientApprovalStatus !== 'ANONYMOUS';
-    const clientDisplayName = showClientName ? cs.clientName : `A leading ${cs.industry} organization`;
+    const clientDisplayName = cs.clientName;
 
     return {
       id: cs.id,
       title: cs.title,
       slug: cs.slug,
       clientDisplayName,
-      clientLogo: showClientName ? cs.clientLogo : null,
+      clientLogo: cs.clientLogo,
       industry: cs.industry,
       engagementType: cs.engagementType,
       publishedAt: cs.publishedAt,
@@ -81,10 +80,10 @@ export class CaseStudyMapper {
       testimonial: cs.testimonialQuote
         ? {
             quote: cs.testimonialQuote,
-            name: showClientName ? cs.testimonialName : 'Executive spokesperson',
+            name: cs.testimonialName || 'Executive spokesperson',
             designation: cs.testimonialDesignation,
             company: clientDisplayName,
-            avatarUrl: showClientName ? cs.testimonialImage : null
+            avatarUrl: cs.testimonialImage || null
           }
         : null,
 
@@ -139,7 +138,6 @@ export class CaseStudyMapper {
       title: cs.title,
       slug: cs.slug,
       clientName: cs.clientName,
-      anonymizeClient: cs.anonymizeClient,
       clientLogo: cs.clientLogo,
       industry: cs.industry,
       engagementType: cs.engagementType,
@@ -147,7 +145,6 @@ export class CaseStudyMapper {
       heroImage: cs.heroImage,
       heroImageAlt: cs.heroImageAlt,
       excerpt: cs.excerpt,
-      clientApprovalStatus: cs.clientApprovalStatus,
       isFeatured: cs.isFeatured,
       serviceIds: cs.serviceIds,
       blogPostIds: cs.blogPostIds,
@@ -184,7 +181,8 @@ export class CaseStudyMapper {
       faqs: cs.faqs || [],
       seo: cs.seoMeta,
       aeoGeo: cs.aeoGeoMeta,
-      schema: cs.schemaSettings
+      schema: cs.schemaSettings,
+      versions: (cs as any).versions || []
     };
   }
 }

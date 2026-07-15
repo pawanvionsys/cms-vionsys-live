@@ -14,7 +14,7 @@ export default async function DashboardPage() {
     prisma.blogPost.count({ where: { status: 'PUBLISHED' } }),
     prisma.caseStudy.count({ where: { publishedAt: { not: null } } }),
     prisma.activityLog.findMany({
-      take: 5,
+      take: 15,
       orderBy: { createdAt: 'desc' },
       include: { user: true }
     })

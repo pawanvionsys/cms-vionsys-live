@@ -24,7 +24,8 @@ export default async function EditBlogPage({ params }: EditBlogPageProps) {
       tags: true,
       seoMeta: true,
       aeoGeoMeta: true,
-      schemaSettings: true
+      schemaSettings: true,
+      versions: { orderBy: { createdAt: 'desc' } }
     }
   });
 

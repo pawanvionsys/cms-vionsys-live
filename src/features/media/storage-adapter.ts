@@ -6,10 +6,12 @@ import { AppError } from '../../lib/errors';
 // Initialize S3 Client
 const s3Client = new S3Client({
   region: process.env.REGION || 'ap-south-1',
-  credentials: {
-    accessKeyId: process.env.ACCESS_KEY_ID || '',
-    secretAccessKey: process.env.SECRET_ACCESS_KEY || '',
-  },
+  ...(process.env.ACCESS_KEY_ID && process.env.SECRET_ACCESS_KEY ? {
+    credentials: {
+      accessKeyId: process.env.ACCESS_KEY_ID,
+      secretAccessKey: process.env.SECRET_ACCESS_KEY,
+    },
+  } : {}),
 });
 
 const BUCKET_NAME = process.env.BUCKET || 'vionsys';

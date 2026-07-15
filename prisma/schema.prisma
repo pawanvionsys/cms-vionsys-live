@@ -28,11 +28,6 @@ enum EngagementType {
   PRODUCT_BUILD
 }
 
-enum ClientApprovalStatus {
-  APPROVED
-  PENDING
-  ANONYMOUS
-}
 
 model User {
   id           String        @id @default(uuid()) @map("_id")
@@ -87,7 +82,6 @@ model CaseStudy {
   title                  String
   slug               String           @unique
   clientName             String
-  anonymizeClient        Boolean              @default(false)
   clientLogo             String?
   industry               String
   engagementType         EngagementType       @default(PROJECT)
@@ -96,7 +90,6 @@ model CaseStudy {
   heroImage              String?
   heroImageAlt           String?
   excerpt                String
-  clientApprovalStatus   ClientApprovalStatus @default(PENDING)
   isFeatured             Boolean              @default(false)
   serviceIds             String[]
   blogPostIds            String[]

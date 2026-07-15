@@ -17,7 +17,8 @@ import {
   Plus,
   Trash,
   FileText,
-  HelpCircle
+  HelpCircle,
+  History
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -25,6 +26,7 @@ import { RichTextEditor } from './RichTextEditor';
 import { EditorSidebar } from './EditorSidebar';
 import { ContentIntelligenceBar } from './ContentIntelligenceBar';
 import { StatusBadge } from '../shared/StatusBadge';
+import { INDUSTRIES_LIST } from '@/config/taxonomy';
 
 interface ContentEditorShellProps {
   id?: string;
@@ -63,11 +65,9 @@ export function ContentEditorShell({
     
     // Case study specific structured fields
     clientName: initialData?.clientName || '',
-    anonymizeClient: initialData?.anonymizeClient || false,
     clientLogo: initialData?.clientLogo || null,
     industry: initialData?.industry || '',
     engagementType: initialData?.engagementType || 'PROJECT',
-    clientApprovalStatus: initialData?.clientApprovalStatus || 'PENDING',
     testimonialQuote: initialData?.testimonialQuote || null,
     testimonialName: initialData?.testimonialName || null,
     testimonialDesignation: initialData?.testimonialDesignation || null,
@@ -153,9 +153,6 @@ export function ContentEditorShell({
     } else if (fieldKey === 'featuredImageAlt' || fieldKey === 'heroImageAlt') {
       targetTab = 'doc';
       inputId = 'document-image-alt-input';
-    } else if (fieldKey === 'clientApprovalStatus') {
-      targetTab = 'doc';
-      inputId = 'document-client-approval-select';
     } else if (fieldKey === 'resultStats') {
       targetTab = 'doc';
       inputId = 'document-result-stats-section';
@@ -527,40 +524,16 @@ export function ContentEditorShell({
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Industry</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Healthcare"
-                        value={docData.industry}
-                        onChange={e => updateField('industry', e.target.value)}
-                        className="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-hidden focus:border-brand-500 bg-white"
-                      />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 pt-2">
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Client Approval Status</label>
                       <select
-                        id="document-client-approval-select"
-                        value={docData.clientApprovalStatus}
-                        onChange={e => updateField('clientApprovalStatus', e.target.value)}
+                        value={docData.industry || ''}
+                        onChange={e => updateField('industry', e.target.value)}
                         className="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-hidden focus:border-brand-500 bg-white cursor-pointer"
                       >
-                        <option value="PENDING">Pending approval</option>
-                        <option value="APPROVED">Approved for public publication</option>
-                        <option value="ANONYMOUS">Anonymous release only</option>
+                        <option value="">Select Industry...</option>
+                        {INDUSTRIES_LIST.map(ind => (
+                          <option key={ind} value={ind}>{ind}</option>
+                        ))}
                       </select>
-                    </div>
-                    <div className="flex items-center gap-2 pt-5">
-                      <input
-                        id="document-anonymize-client-checkbox"
-                        type="checkbox"
-                        checked={docData.anonymizeClient}
-                        onChange={e => updateField('anonymizeClient', e.target.checked)}
-                        className="rounded-sm border-slate-300 text-brand-600 focus:ring-brand-500"
-                      />
-                      <label htmlFor="document-anonymize-client-checkbox" className="text-xs text-slate-700 font-semibold cursor-pointer">
-                        Anonymize Client public branding
-                      </label>
                     </div>
                   </div>
                 </div>
@@ -888,6 +861,7 @@ export function ContentEditorShell({
               )}
             </div>
 
+
             {/* Bottom intelligence bar */}
             <ContentIntelligenceBar
               contentText={contentText}
@@ -956,6 +930,7 @@ export function ContentEditorShell({
                 }}
               />
             </div>
+
 
             {/* Bottom intelligence statistics bar */}
             <ContentIntelligenceBar
