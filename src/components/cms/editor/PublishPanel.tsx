@@ -111,23 +111,24 @@ export function PublishPanel({
             <p className="text-[10px] text-rose-600 leading-normal">
               Click any blocker to jump to its input field:
             </p>
-            <ul className="list-disc pl-4 space-y-1.5 text-[10px] text-rose-700">
+            <div className="space-y-1.5 text-[10px] text-rose-700">
               {blockers.map((b, idx) => (
-                <li key={idx}>
+                <div key={idx} className="flex items-start gap-1.5">
+                  <span className="shrink-0 text-rose-400 mt-0.5">•</span>
                   {b.field ? (
                     <button
                       type="button"
                       onClick={() => onChecklistItemClick?.(b.field!)}
-                      className="text-left underline hover:text-rose-900 cursor-pointer decoration-dotted focus:outline-none font-semibold transition-colors"
+                      className="text-left underline hover:text-rose-900 cursor-pointer decoration-dotted focus:outline-none font-semibold transition-colors animate-fade-in"
                     >
                       {b.message}
                     </button>
                   ) : (
                     <span>{b.message}</span>
                   )}
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         ) : (
           <div className="p-4 bg-emerald-50/40 border border-emerald-100 rounded-xl text-emerald-800 text-xs space-y-1">
@@ -150,23 +151,24 @@ export function PublishPanel({
             <p className="text-[10px] text-amber-600 leading-normal">
               Click to refine recommended SEO fields:
             </p>
-            <ul className="list-disc pl-4 space-y-1.5 text-[10px] text-amber-700">
+            <div className="space-y-1.5 text-[10px] text-amber-700">
               {warnings.map((w, idx) => (
-                <li key={idx}>
+                <div key={idx} className="flex items-start gap-1.5">
+                  <span className="shrink-0 text-amber-400 mt-0.5">•</span>
                   {w.field ? (
                     <button
                       type="button"
                       onClick={() => onChecklistItemClick?.(w.field!)}
-                      className="text-left underline hover:text-amber-900 cursor-pointer decoration-dotted focus:outline-none font-semibold transition-colors"
+                      className="text-left underline hover:text-amber-900 cursor-pointer decoration-dotted focus:outline-none font-semibold transition-colors animate-fade-in"
                     >
                       {w.message}
                     </button>
                   ) : (
                     <span>{w.message}</span>
                   )}
-                </li>
+                </div>
               ))}
-            </ul>
+            </div>
           </div>
         )}
       </div>

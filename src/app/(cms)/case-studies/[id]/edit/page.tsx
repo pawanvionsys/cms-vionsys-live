@@ -25,7 +25,8 @@ export default async function EditCaseStudyPage({ params }: EditCaseStudyPagePro
       seoMeta: true,
       aeoGeoMeta: true,
       schemaSettings: true,
-      faqs: true
+      faqs: true,
+      versions: { orderBy: { createdAt: 'desc' } }
     }
   });
 

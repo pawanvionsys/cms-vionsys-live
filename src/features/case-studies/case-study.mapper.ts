@@ -184,7 +184,8 @@ export class CaseStudyMapper {
       faqs: cs.faqs || [],
       seo: cs.seoMeta,
       aeoGeo: cs.aeoGeoMeta,
-      schema: cs.schemaSettings
+      schema: cs.schemaSettings,
+      versions: (cs as any).versions || []
     };
   }
 }

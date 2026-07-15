@@ -119,10 +119,13 @@ export function DashboardWidgets({ cards, logs }: DashboardWidgetsProps) {
       <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {cards.map(card => {
           const Icon = iconMap[card.iconType] || Layers;
+          const href = card.iconType === 'blog' ? '/blogs' : card.iconType === 'case-study' ? '/case-studies' : '/blogs';
+          
           return (
-            <div
+            <Link
               key={card.label}
-              className="p-6 bg-white border border-slate-200 rounded-xl flex items-center justify-between shadow-3xs hover:shadow-xs transition-shadow duration-200 hover:border-slate-300"
+              href={href}
+              className="p-6 bg-white border border-slate-200 rounded-xl flex items-center justify-between shadow-3xs hover:shadow-xs transition-all duration-200 hover:border-slate-300 hover:bg-slate-50/30 active-press cursor-pointer block"
             >
               <div className="space-y-1.5">
                 <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">{card.label}</span>
@@ -134,7 +137,7 @@ export function DashboardWidgets({ cards, logs }: DashboardWidgetsProps) {
               <div className={`w-12 h-12 rounded-xl flex items-center justify-center border ${card.bg}`}>
                 <Icon className="w-5 h-5" />
               </div>
-            </div>
+            </Link>
           );
         })}
       </motion.div>

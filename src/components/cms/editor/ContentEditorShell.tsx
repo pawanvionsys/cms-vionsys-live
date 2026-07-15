@@ -17,7 +17,8 @@ import {
   Plus,
   Trash,
   FileText,
-  HelpCircle
+  HelpCircle,
+  History
 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -25,6 +26,7 @@ import { RichTextEditor } from './RichTextEditor';
 import { EditorSidebar } from './EditorSidebar';
 import { ContentIntelligenceBar } from './ContentIntelligenceBar';
 import { StatusBadge } from '../shared/StatusBadge';
+import { INDUSTRIES_LIST } from '@/config/taxonomy';
 
 interface ContentEditorShellProps {
   id?: string;
@@ -141,6 +143,7 @@ export function ContentEditorShell({
   // Lifted Sidebar States for Smooth Synchronized Animations
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sidebarTab, setSidebarTab] = useState<'doc' | 'seo' | 'aeo' | 'schema' | 'publish'>('doc');
+  const [trackerOpen, setTrackerOpen] = useState(false);
 
   const scrollToField = (fieldKey: string) => {
     let targetTab: 'doc' | 'seo' | 'aeo' | 'schema' | 'publish' | null = null;
@@ -527,13 +530,16 @@ export function ContentEditorShell({
                     </div>
                     <div className="flex flex-col gap-1.5">
                       <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Industry</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Healthcare"
-                        value={docData.industry}
+                      <select
+                        value={docData.industry || ''}
                         onChange={e => updateField('industry', e.target.value)}
-                        className="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-hidden focus:border-brand-500 bg-white"
-                      />
+                        className="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-hidden focus:border-brand-500 bg-white cursor-pointer"
+                      >
+                        <option value="">Select Industry...</option>
+                        {INDUSTRIES_LIST.map(ind => (
+                          <option key={ind} value={ind}>{ind}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4 pt-2">
@@ -888,6 +894,53 @@ export function ContentEditorShell({
               )}
             </div>
 
+            {/* Version History / Changes Tracker */}
+            {id && (
+              <div className="bg-white border border-slate-200 rounded-xl shadow-3xs overflow-hidden my-6">
+                <button
+                  type="button"
+                  onClick={() => setTrackerOpen(!trackerOpen)}
+                  className="w-full flex items-center justify-between p-4 hover:bg-slate-50/50 cursor-pointer text-left focus:outline-none"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-1.5 bg-indigo-50 rounded-lg text-indigo-600">
+                      <History className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">Changes Tracker ({initialData?.versions?.length || 0})</span>
+                      <span className="text-[10px] text-slate-400">View version history and changes captured on save</span>
+                    </div>
+                  </div>
+                  {trackerOpen ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                </button>
+
+                {trackerOpen && (
+                  <div className="p-5 border-t border-slate-100 bg-slate-50/10 space-y-4">
+                    {(!initialData?.versions || initialData.versions.length === 0) ? (
+                      <p className="text-xs text-slate-400 italic">No version history captured yet.</p>
+                    ) : (
+                      <div className="space-y-4 relative pl-3.5 border-l border-slate-100 py-1">
+                        {initialData.versions.map((ver: any, idx: number) => (
+                          <div key={ver.id || idx} className="relative flex flex-col gap-1 text-xs">
+                            <span className="absolute -left-[19.5px] top-1.5 w-2 h-2 rounded-full border border-indigo-500 bg-white" />
+                            <div className="flex justify-between items-baseline gap-2">
+                              <span className="font-bold text-slate-850">Version #{initialData.versions.length - idx}</span>
+                              <span className="text-[9px] font-semibold text-slate-400 bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded-sm">
+                                {new Date(ver.createdAt).toLocaleString()}
+                              </span>
+                            </div>
+                            <p className="text-[10px] text-slate-500 leading-normal">
+                              Backup saved successfully. Size: {Math.round(JSON.stringify(ver.contentJson || {}).length / 1024)} KB.
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Bottom intelligence bar */}
             <ContentIntelligenceBar
               contentText={contentText}
@@ -956,6 +1009,53 @@ export function ContentEditorShell({
                 }}
               />
             </div>
+
+            {/* Version History / Changes Tracker */}
+            {id && (
+              <div className="bg-white border border-slate-200 rounded-xl shadow-3xs overflow-hidden my-6">
+                <button
+                  type="button"
+                  onClick={() => setTrackerOpen(!trackerOpen)}
+                  className="w-full flex items-center justify-between p-4 hover:bg-slate-50/50 cursor-pointer text-left focus:outline-none"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="p-1.5 bg-indigo-50 rounded-lg text-indigo-600">
+                      <History className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">Changes Tracker ({initialData?.versions?.length || 0})</span>
+                      <span className="text-[10px] text-slate-400">View version history and changes captured on save</span>
+                    </div>
+                  </div>
+                  {trackerOpen ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+                </button>
+
+                {trackerOpen && (
+                  <div className="p-5 border-t border-slate-100 bg-slate-50/10 space-y-4">
+                    {(!initialData?.versions || initialData.versions.length === 0) ? (
+                      <p className="text-xs text-slate-400 italic">No version history captured yet.</p>
+                    ) : (
+                      <div className="space-y-4 relative pl-3.5 border-l border-slate-100 py-1">
+                        {initialData.versions.map((ver: any, idx: number) => (
+                          <div key={ver.id || idx} className="relative flex flex-col gap-1 text-xs">
+                            <span className="absolute -left-[19.5px] top-1.5 w-2 h-2 rounded-full border border-indigo-500 bg-white" />
+                            <div className="flex justify-between items-baseline gap-2">
+                              <span className="font-bold text-slate-850">Version #{initialData.versions.length - idx}</span>
+                              <span className="text-[9px] font-semibold text-slate-400 bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded-sm">
+                                {new Date(ver.createdAt).toLocaleString()}
+                              </span>
+                            </div>
+                            <p className="text-[10px] text-slate-500 leading-normal">
+                              Backup saved successfully. Size: {Math.round(JSON.stringify(ver.contentJson || {}).length / 1024)} KB.
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Bottom intelligence statistics bar */}
             <ContentIntelligenceBar
