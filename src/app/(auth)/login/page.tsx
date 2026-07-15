@@ -108,11 +108,6 @@ export default function LoginPage() {
             </button>
           </div>
         </form>
-
-        {/* Footnote developer credentials tips */}
-        <div className="p-3 bg-indigo-50/30 border border-indigo-100 rounded-lg text-[10px] text-indigo-700 text-center leading-relaxed font-semibold">
-          💡 Dev Mode Credentials: <code className="bg-indigo-50/50 px-1 py-0.5 rounded-sm">admin@vionsys.com</code> / <code className="bg-indigo-50/50 px-1 py-0.5 rounded-sm">admin123</code>
-        </div>
       </div>
     </main>
   );

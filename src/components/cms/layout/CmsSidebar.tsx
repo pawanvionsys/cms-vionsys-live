@@ -92,7 +92,7 @@ export function CmsSidebar({ user }: SidebarProps) {
           {isCollapsed ? (
             <img src="/logo-icon.png" alt="Logo" className="w-8 h-8 object-contain shrink-0" />
           ) : (
-            <img src="/logo-full.png" alt="Vionsys CMS" className="h-8 object-contain select-none" />
+            <img src="/logo-full.png" alt="Vionsys CMS" className="size-38 object-contain select-none" />
           )}
         </div>
         <button
