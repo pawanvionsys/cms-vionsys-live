@@ -43,8 +43,8 @@ export default function LoginPage() {
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-200/60 p-8 space-y-6 animate-in fade-in zoom-in-95 duration-350 select-none">
         {/* Header */}
         <div className="flex flex-col items-center text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
-            <PenTool className="w-6 h-6" />
+          <div className="w-16 h-16 bg-transparent flex items-center justify-center overflow-hidden">
+            <img src="/logo-icon.png" alt="Vionsys Logo" className="w-full h-full object-contain" />
           </div>
           <h2 className="text-xl font-bold text-slate-800 tracking-tight">Vionsys CMS Login</h2>
           <p className="text-xs text-slate-400 max-w-xs">
