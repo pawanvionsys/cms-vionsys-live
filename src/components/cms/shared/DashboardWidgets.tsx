@@ -9,7 +9,9 @@ import {
   TrendingUp,
   FileEdit,
   Globe,
-  History
+  History,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -85,6 +87,8 @@ function CountUp({ end }: { end: number }) {
 }
 
 export function DashboardWidgets({ cards, logs }: DashboardWidgetsProps) {
+  const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
+  
   // Stagger variants for layout entry
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -208,24 +212,45 @@ export function DashboardWidgets({ cards, logs }: DashboardWidgetsProps) {
           {logs.length === 0 ? (
             <p className="text-xs text-slate-400 text-center py-8">No editorial changes recorded yet.</p>
           ) : (
-            <div className="space-y-4 relative pl-3.5 border-l border-slate-100 py-1">
-              {logs.map((log, idx) => (
-                <div key={log.id} className="relative flex flex-col gap-1 text-xs">
-                  {/* Timeline bullet dot */}
-                  <span className="absolute -left-[19.5px] top-1.5 w-2 h-2 rounded-full border border-brand-500 bg-white" />
-                  
-                  <div className="flex justify-between items-baseline gap-2">
-                    <p className="font-bold text-slate-850 truncate leading-snug">{log.action}</p>
-                    <span className="text-[9px] font-semibold text-slate-400 shrink-0 uppercase tracking-wide bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded-sm">
-                      {getRelativeTime(log.createdAt)}
-                    </span>
+            <div className="space-y-3 relative pl-3.5 border-l border-slate-100 py-1">
+              {logs.map((log) => {
+                const isExpanded = expandedLogId === log.id;
+                return (
+                  <div key={log.id} className="relative flex flex-col gap-1 text-xs border border-slate-100/70 hover:border-slate-200 rounded-lg p-3 hover:bg-slate-50/20 transition-all select-none">
+                    {/* Timeline bullet dot */}
+                    <span className="absolute -left-[19.5px] top-4 w-2 h-2 rounded-full border border-indigo-500 bg-white" />
+                    
+                    <button
+                      type="button"
+                      onClick={() => setExpandedLogId(isExpanded ? null : log.id)}
+                      className="w-full text-left flex justify-between items-center gap-2 font-bold text-slate-800 focus:outline-none cursor-pointer"
+                    >
+                      <span className="truncate pr-2">{log.action.replace(/_/g, ' ')}</span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-wide bg-slate-100 px-1.5 py-0.5 rounded-sm">
+                          {getRelativeTime(log.createdAt)}
+                        </span>
+                        {isExpanded ? (
+                          <ChevronUp className="w-3.5 h-3.5 text-slate-400" />
+                        ) : (
+                          <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                        )}
+                      </div>
+                    </button>
+
+                    {isExpanded && (
+                      <div className="pt-2.5 mt-2.5 border-t border-slate-100 text-[11px] text-slate-600 space-y-1.5 animate-fade-in leading-relaxed">
+                        <p>
+                          📝 <span className="font-bold text-slate-750">Details:</span> {log.details}
+                        </p>
+                        <p className="text-[10px] text-slate-450 font-medium">
+                          👤 Modified by: <span className="text-slate-600 font-bold">{log.user.name}</span>
+                        </p>
+                      </div>
+                    )}
                   </div>
-                  <p className="text-[11px] text-slate-500 leading-normal">{log.details}</p>
-                  <p className="text-[10px] text-slate-405 font-medium">
-                    Triggered by <span className="text-slate-650 font-bold">{log.user.name}</span>
-                  </p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </motion.div>

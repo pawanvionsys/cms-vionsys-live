@@ -65,11 +65,9 @@ export function ContentEditorShell({
     
     // Case study specific structured fields
     clientName: initialData?.clientName || '',
-    anonymizeClient: initialData?.anonymizeClient || false,
     clientLogo: initialData?.clientLogo || null,
     industry: initialData?.industry || '',
     engagementType: initialData?.engagementType || 'PROJECT',
-    clientApprovalStatus: initialData?.clientApprovalStatus || 'PENDING',
     testimonialQuote: initialData?.testimonialQuote || null,
     testimonialName: initialData?.testimonialName || null,
     testimonialDesignation: initialData?.testimonialDesignation || null,
@@ -143,7 +141,6 @@ export function ContentEditorShell({
   // Lifted Sidebar States for Smooth Synchronized Animations
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sidebarTab, setSidebarTab] = useState<'doc' | 'seo' | 'aeo' | 'schema' | 'publish'>('doc');
-  const [trackerOpen, setTrackerOpen] = useState(false);
 
   const scrollToField = (fieldKey: string) => {
     let targetTab: 'doc' | 'seo' | 'aeo' | 'schema' | 'publish' | null = null;
@@ -156,9 +153,6 @@ export function ContentEditorShell({
     } else if (fieldKey === 'featuredImageAlt' || fieldKey === 'heroImageAlt') {
       targetTab = 'doc';
       inputId = 'document-image-alt-input';
-    } else if (fieldKey === 'clientApprovalStatus') {
-      targetTab = 'doc';
-      inputId = 'document-client-approval-select';
     } else if (fieldKey === 'resultStats') {
       targetTab = 'doc';
       inputId = 'document-result-stats-section';
@@ -542,31 +536,6 @@ export function ContentEditorShell({
                       </select>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4 pt-2">
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Client Approval Status</label>
-                      <select
-                        id="document-client-approval-select"
-                        value={docData.clientApprovalStatus}
-                        onChange={e => updateField('clientApprovalStatus', e.target.value)}
-                        className="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-hidden focus:border-brand-500 bg-white cursor-pointer"
-                      >
-                        <option value="PENDING">Pending approval</option>
-                        <option value="APPROVED">Approved for public publication</option>
-                        <option value="ANONYMOUS">Anonymous release only</option>
-                      </select>
-                    </div>
-                    <div className="flex items-center gap-2 pt-5">
-                      <input
-                        id="document-anonymize-client-checkbox"
-                        type="checkbox"
-                        checked={docData.anonymizeClient}
-                        onChange={e => updateField('anonymizeClient', e.target.checked)}
-                        className="rounded-sm border-slate-300 text-brand-600 focus:ring-brand-500"
-                      />
-                      <label htmlFor="document-anonymize-client-checkbox" className="text-xs text-slate-700 font-semibold cursor-pointer">
-                        Anonymize Client public branding
-                      </label>
                     </div>
                   </div>
                 </div>
@@ -894,52 +863,7 @@ export function ContentEditorShell({
               )}
             </div>
 
-            {/* Version History / Changes Tracker */}
-            {id && (
-              <div className="bg-white border border-slate-200 rounded-xl shadow-3xs overflow-hidden my-6">
-                <button
-                  type="button"
-                  onClick={() => setTrackerOpen(!trackerOpen)}
-                  className="w-full flex items-center justify-between p-4 hover:bg-slate-50/50 cursor-pointer text-left focus:outline-none"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 bg-indigo-50 rounded-lg text-indigo-600">
-                      <History className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">Changes Tracker ({initialData?.versions?.length || 0})</span>
-                      <span className="text-[10px] text-slate-400">View version history and changes captured on save</span>
-                    </div>
-                  </div>
-                  {trackerOpen ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
-                </button>
-
-                {trackerOpen && (
-                  <div className="p-5 border-t border-slate-100 bg-slate-50/10 space-y-4">
-                    {(!initialData?.versions || initialData.versions.length === 0) ? (
-                      <p className="text-xs text-slate-400 italic">No version history captured yet.</p>
-                    ) : (
-                      <div className="space-y-4 relative pl-3.5 border-l border-slate-100 py-1">
-                        {initialData.versions.map((ver: any, idx: number) => (
-                          <div key={ver.id || idx} className="relative flex flex-col gap-1 text-xs">
-                            <span className="absolute -left-[19.5px] top-1.5 w-2 h-2 rounded-full border border-indigo-500 bg-white" />
-                            <div className="flex justify-between items-baseline gap-2">
-                              <span className="font-bold text-slate-850">Version #{initialData.versions.length - idx}</span>
-                              <span className="text-[9px] font-semibold text-slate-400 bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded-sm">
-                                {new Date(ver.createdAt).toLocaleString()}
-                              </span>
-                            </div>
-                            <p className="text-[10px] text-slate-500 leading-normal">
-                              Backup saved successfully. Size: {Math.round(JSON.stringify(ver.contentJson || {}).length / 1024)} KB.
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
+            </div>
 
             {/* Bottom intelligence bar */}
             <ContentIntelligenceBar
@@ -1010,52 +934,7 @@ export function ContentEditorShell({
               />
             </div>
 
-            {/* Version History / Changes Tracker */}
-            {id && (
-              <div className="bg-white border border-slate-200 rounded-xl shadow-3xs overflow-hidden my-6">
-                <button
-                  type="button"
-                  onClick={() => setTrackerOpen(!trackerOpen)}
-                  className="w-full flex items-center justify-between p-4 hover:bg-slate-50/50 cursor-pointer text-left focus:outline-none"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 bg-indigo-50 rounded-lg text-indigo-600">
-                      <History className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <span className="text-xs font-bold text-slate-800 uppercase tracking-wider block">Changes Tracker ({initialData?.versions?.length || 0})</span>
-                      <span className="text-[10px] text-slate-400">View version history and changes captured on save</span>
-                    </div>
-                  </div>
-                  {trackerOpen ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
-                </button>
-
-                {trackerOpen && (
-                  <div className="p-5 border-t border-slate-100 bg-slate-50/10 space-y-4">
-                    {(!initialData?.versions || initialData.versions.length === 0) ? (
-                      <p className="text-xs text-slate-400 italic">No version history captured yet.</p>
-                    ) : (
-                      <div className="space-y-4 relative pl-3.5 border-l border-slate-100 py-1">
-                        {initialData.versions.map((ver: any, idx: number) => (
-                          <div key={ver.id || idx} className="relative flex flex-col gap-1 text-xs">
-                            <span className="absolute -left-[19.5px] top-1.5 w-2 h-2 rounded-full border border-indigo-500 bg-white" />
-                            <div className="flex justify-between items-baseline gap-2">
-                              <span className="font-bold text-slate-850">Version #{initialData.versions.length - idx}</span>
-                              <span className="text-[9px] font-semibold text-slate-400 bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded-sm">
-                                {new Date(ver.createdAt).toLocaleString()}
-                              </span>
-                            </div>
-                            <p className="text-[10px] text-slate-500 leading-normal">
-                              Backup saved successfully. Size: {Math.round(JSON.stringify(ver.contentJson || {}).length / 1024)} KB.
-                            </p>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
+            </div>
 
             {/* Bottom intelligence statistics bar */}
             <ContentIntelligenceBar

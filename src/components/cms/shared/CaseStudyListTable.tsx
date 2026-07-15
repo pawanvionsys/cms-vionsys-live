@@ -10,9 +10,7 @@ interface CaseStudyWithRelations {
   id: string;
   title: string;
   clientName: string;
-  anonymizeClient: boolean;
   industry: string;
-  clientApprovalStatus: string;
   resultStats: any[];
   updatedAt: string | Date;
 }
@@ -127,7 +125,6 @@ export function CaseStudyListTable({ caseStudies }: CaseStudyListTableProps) {
                   <th className="py-3.5 px-3 w-32">Client Name</th>
                   <th className="py-3.5 px-3 w-32">Industry</th>
                   <th className="py-3.5 px-3 w-28">Metrics</th>
-                  <th className="py-3.5 px-3 w-32">Client Approval</th>
                   <th className="py-3.5 px-3 w-28">Last Updated</th>
                   <th className="py-3.5 px-4 text-right w-28">Actions</th>
                 </tr>
@@ -161,7 +158,7 @@ export function CaseStudyListTable({ caseStudies }: CaseStudyListTableProps) {
                         </Link>
                       </td>
                       <td className="py-3.5 px-3 font-semibold text-slate-600">
-                        {cs.anonymizeClient ? 'Anonymous' : cs.clientName}
+                        {cs.clientName}
                       </td>
                       <td className="py-3.5 px-3 font-medium text-slate-500">
                         {cs.industry}
@@ -169,19 +166,7 @@ export function CaseStudyListTable({ caseStudies }: CaseStudyListTableProps) {
                       <td className="py-3.5 px-3 text-slate-500 font-bold">
                         {cs.resultStats?.length || 0} metrics
                       </td>
-                      <td className="py-3.5 px-3">
-                        <span
-                          className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-extrabold border ${
-                            cs.clientApprovalStatus === 'APPROVED'
-                              ? 'bg-emerald-50 text-emerald-700 border-emerald-150'
-                              : cs.clientApprovalStatus === 'PENDING'
-                              ? 'bg-amber-50 text-amber-700 border-amber-150'
-                              : 'bg-slate-50 text-slate-600 border-slate-150'
-                          }`}
-                        >
-                          {cs.clientApprovalStatus}
-                        </span>
-                      </td>
+
                       <td className="py-3.5 px-3 text-slate-400 font-semibold">
                         {new Date(cs.updatedAt).toLocaleDateString()}
                       </td>

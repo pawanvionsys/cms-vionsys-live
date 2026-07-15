@@ -124,9 +124,6 @@ export class PublishService {
     if (!cs.slug || cs.slug.trim() === '') {
       issues.push({ type: 'blocker', message: 'Missing URL slug.', field: 'slug' });
     }
-    if (cs.clientApprovalStatus === 'PENDING') {
-      issues.push({ type: 'blocker', message: 'Client approval status cannot be Pending.', field: 'clientApprovalStatus' });
-    }
     if (!cs.resultStats || cs.resultStats.length < 2) {
       issues.push({ type: 'blocker', message: 'A case study requires at least 2 results metrics.', field: 'resultStats' });
     }

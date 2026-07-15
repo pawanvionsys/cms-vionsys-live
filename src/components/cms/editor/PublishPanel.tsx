@@ -63,9 +63,6 @@ export function PublishPanel({
       if (!data.clientName || !data.clientName.trim()) {
         list.push({ type: 'blocker', message: 'Client Name is required.', field: 'clientName' });
       }
-      if (data.clientApprovalStatus === 'PENDING') {
-        list.push({ type: 'blocker', message: 'Client approval status is Pending.', field: 'clientApprovalStatus' });
-      }
       if (!data.resultStats || data.resultStats.length < 2) {
         list.push({ type: 'blocker', message: 'Case study needs at least 2 metrics.', field: 'resultStats' });
       }

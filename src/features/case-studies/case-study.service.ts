@@ -19,7 +19,6 @@ export class CaseStudyService {
 
     const where: any = {};
     if (industry) where.industry = industry;
-    if (approvalStatus) where.clientApprovalStatus = approvalStatus;
     if (engagementType) where.engagementType = engagementType;
     if (search) {
       where.OR = [
@@ -97,14 +96,12 @@ export class CaseStudyService {
           title: input.title,
           slug: finalSlug,
           clientName: input.clientName,
-          anonymizeClient: input.anonymizeClient,
           clientLogo: input.clientLogo || null,
           industry: input.industry,
           engagementType: input.engagementType,
           heroImage: input.heroImage || null,
           heroImageAlt: input.heroImageAlt || null,
           excerpt: input.excerpt || '',
-          clientApprovalStatus: input.clientApprovalStatus,
           isFeatured: input.isFeatured,
           serviceIds: input.serviceIds,
           blogPostIds: input.blogPostIds,
@@ -265,14 +262,12 @@ export class CaseStudyService {
     const fields = [
       'title',
       'clientName',
-      'anonymizeClient',
       'clientLogo',
       'industry',
       'engagementType',
       'heroImage',
       'heroImageAlt',
       'excerpt',
-      'clientApprovalStatus',
       'isFeatured',
       'serviceIds',
       'blogPostIds',

@@ -27,15 +27,14 @@ export class CaseStudyMapper {
       return null;
     }
 
-    const showClientName = !cs.anonymizeClient && cs.clientApprovalStatus !== 'ANONYMOUS';
-    const clientDisplayName = showClientName ? cs.clientName : `A leading ${cs.industry} organization`;
+    const clientDisplayName = cs.clientName;
 
     return {
       id: cs.id,
       title: cs.title,
       slug: cs.slug,
       clientDisplayName,
-      clientLogo: showClientName ? cs.clientLogo : null,
+      clientLogo: cs.clientLogo,
       industry: cs.industry,
       engagementType: cs.engagementType,
       publishedAt: cs.publishedAt,
@@ -139,7 +138,6 @@ export class CaseStudyMapper {
       title: cs.title,
       slug: cs.slug,
       clientName: cs.clientName,
-      anonymizeClient: cs.anonymizeClient,
       clientLogo: cs.clientLogo,
       industry: cs.industry,
       engagementType: cs.engagementType,
@@ -147,7 +145,6 @@ export class CaseStudyMapper {
       heroImage: cs.heroImage,
       heroImageAlt: cs.heroImageAlt,
       excerpt: cs.excerpt,
-      clientApprovalStatus: cs.clientApprovalStatus,
       isFeatured: cs.isFeatured,
       serviceIds: cs.serviceIds,
       blogPostIds: cs.blogPostIds,
