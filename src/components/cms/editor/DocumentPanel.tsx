@@ -130,31 +130,6 @@ export function DocumentPanel({
             />
           </FormField>
 
-          {/* Client Approval / Anonymize Status */}
-          <div className="space-y-2 border-b border-slate-100 pb-3">
-            <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={data.anonymizeClient || false}
-                onChange={e => onChange('anonymizeClient', e.target.checked)}
-                className="rounded-sm border-slate-350 text-indigo-600"
-              />
-              Anonymize client public branding
-            </label>
-
-            <FormField label="Client Approval Status">
-              <select
-                id="document-client-approval-select"
-                value={data.clientApprovalStatus || 'PENDING'}
-                onChange={e => onChange('clientApprovalStatus', e.target.value)}
-                className="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg bg-white focus:outline-hidden focus:border-indigo-500 cursor-pointer"
-              >
-                <option value="PENDING">Pending approval</option>
-                <option value="APPROVED">Approved for public publication</option>
-                <option value="ANONYMOUS">Anonymous release only</option>
-              </select>
-            </FormField>
-          </div>
         </>
       )}
 

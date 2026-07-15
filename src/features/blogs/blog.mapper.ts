@@ -102,6 +102,7 @@ export class BlogMapper {
       seo: blog.seoMeta,
       aeoGeo: blog.aeoGeoMeta,
       schema: blog.schemaSettings,
+      versions: (blog as any).versions || [],
     };
   }
 }

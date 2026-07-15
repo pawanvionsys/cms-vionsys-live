@@ -104,8 +104,8 @@ export default async function CaseStudyPreviewPage({ params }: CaseStudyPreviewP
 
               {/* Client meta */}
               <div className="text-xs text-slate-300 font-medium flex items-center gap-2">
-                <span>Client: <strong className="text-white font-semibold">{cs.anonymizeClient ? 'Anonymous Client' : cs.clientName}</strong></span>
-                {cs.clientLogo && !cs.anonymizeClient && (
+                <span>Client: <strong className="text-white font-semibold">{cs.clientName}</strong></span>
+                {cs.clientLogo && (
                   <span className="w-4 h-4 rounded-full bg-white/20 inline-block overflow-hidden">
                     <img src={cs.clientLogo} alt="Logo" className="w-full h-full object-contain" />
                   </span>

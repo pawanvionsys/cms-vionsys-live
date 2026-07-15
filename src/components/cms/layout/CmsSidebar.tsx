@@ -89,16 +89,10 @@ export function CmsSidebar({ user }: SidebarProps) {
       {/* Sidebar Header */}
       <div className="h-16 px-4 border-b border-slate-100 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2 overflow-hidden">
-          <PenTool className="w-5.5 h-5.5 text-brand-600 shrink-0" />
-          {!isCollapsed && (
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="font-bold text-slate-800 tracking-tight text-[15px] whitespace-nowrap"
-            >
-              Vionsys CMS
-            </motion.span>
+          {isCollapsed ? (
+            <img src="/logo-icon.png" alt="Logo" className="w-8 h-8 object-contain shrink-0" />
+          ) : (
+            <img src="/logo-full.png" alt="Vionsys CMS" className="size-38 object-contain select-none" />
           )}
         </div>
         <button
