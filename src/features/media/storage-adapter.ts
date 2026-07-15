@@ -5,14 +5,14 @@ import { AppError } from '../../lib/errors';
 
 // Initialize S3 Client
 const s3Client = new S3Client({
-  region: process.env.AWS_REGION || 'ap-south-1',
+  region: process.env.REGION || 'ap-south-1',
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+    accessKeyId: process.env.ACCESS_KEY_ID || '',
+    secretAccessKey: process.env.SECRET_ACCESS_KEY || '',
   },
 });
 
-const BUCKET_NAME = process.env.AWS_S3_BUCKET || 'vionsys';
+const BUCKET_NAME = process.env.BUCKET || 'vionsys';
 
 export class StorageAdapter {
   /**
@@ -49,7 +49,7 @@ export class StorageAdapter {
     }
 
     // Mapped S3 URL
-    const url = `https://${BUCKET_NAME}.s3.${process.env.AWS_REGION || 'ap-south-1'}.amazonaws.com/${uniqueName}`;
+    const url = `https://${BUCKET_NAME}.s3.${process.env.REGION || 'ap-south-1'}.amazonaws.com/${uniqueName}`;
 
     return {
       url,
