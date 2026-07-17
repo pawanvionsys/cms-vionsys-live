@@ -68,6 +68,7 @@ export function ContentEditorShell({
     clientLogo: initialData?.clientLogo || null,
     industry: initialData?.industry || '',
     engagementType: initialData?.engagementType || 'PROJECT',
+    showMetricsOnTop: initialData?.showMetricsOnTop || false,
     testimonialQuote: initialData?.testimonialQuote || null,
     testimonialName: initialData?.testimonialName || null,
     testimonialDesignation: initialData?.testimonialDesignation || null,
@@ -652,6 +653,22 @@ export function ContentEditorShell({
                     <Plus className="w-3.5 h-3.5" />
                     Add Metric
                   </button>
+
+                  <div className="border-t border-slate-200/60 pt-4 flex items-center justify-between mt-4">
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-xs font-bold text-slate-800 uppercase tracking-wide">Show Metrics on Top of Page</span>
+                      <span className="text-[10px] text-slate-400">If enabled, vionsys.com will display metrics at the start of the study instead of the end.</span>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={docData.showMetricsOnTop}
+                        onChange={e => updateField('showMetricsOnTop', e.target.checked)}
+                        className="sr-only peer"
+                      />
+                      <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-650"></div>
+                    </label>
+                  </div>
                 </div>
               )}
             </div>
