@@ -42,6 +42,7 @@ export class CaseStudyMapper {
       heroImageAlt: cs.heroImageAlt,
       excerpt: cs.excerpt,
       isFeatured: cs.isFeatured,
+      showMetricsOnTop: cs.showMetricsOnTop,
       serviceIds: cs.serviceIds,
       blogPostIds: cs.blogPostIds,
       
@@ -146,6 +147,7 @@ export class CaseStudyMapper {
       heroImageAlt: cs.heroImageAlt,
       excerpt: cs.excerpt,
       isFeatured: cs.isFeatured,
+      showMetricsOnTop: cs.showMetricsOnTop,
       serviceIds: cs.serviceIds,
       blogPostIds: cs.blogPostIds,
       internalNote: cs.internalNote,

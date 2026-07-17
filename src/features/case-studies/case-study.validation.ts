@@ -36,6 +36,7 @@ export const caseStudyFormSchema = z.object({
   heroImageAlt: z.string().nullable().optional(),
   excerpt: z.string().max(160, 'Excerpt cannot exceed 160 characters'),
   isFeatured: z.boolean().default(false),
+  showMetricsOnTop: z.boolean().default(false),
   serviceIds: z.array(z.string()).default([]),
   blogPostIds: z.array(z.string()).default([]),
   internalNote: z.string().nullable().optional(),

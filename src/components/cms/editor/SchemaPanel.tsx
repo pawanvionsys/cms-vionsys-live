@@ -31,7 +31,23 @@ export function SchemaPanel({
   // 1. Resolve selected schema type
   const schemaType = schema.type || (contentType === 'blog' ? 'BlogPosting' : 'CaseStudy/WebPage');
 
-  // 2. Generate preview jsonld
+  // 2. State to check for custom JSON validity
+  const [isValidJson, setIsValidJson] = React.useState(true);
+
+  React.useEffect(() => {
+    if (!schema.customSchemaJson || !schema.customSchemaJson.trim()) {
+      setIsValidJson(true);
+      return;
+    }
+    try {
+      JSON.parse(schema.customSchemaJson);
+      setIsValidJson(true);
+    } catch {
+      setIsValidJson(false);
+    }
+  }, [schema.customSchemaJson]);
+
+  // 3. Generate preview jsonld
   const getPreviewJsonLd = () => {
     if (contentType === 'blog') {
       return SchemaGenerator.generateBlogPostingSchema({
@@ -55,7 +71,9 @@ export function SchemaPanel({
     }
   };
 
-  const jsonLdString = JSON.stringify(getPreviewJsonLd(), null, 2);
+  const jsonLdString = schema.customSchemaJson && schema.customSchemaJson.trim()
+    ? schema.customSchemaJson
+    : JSON.stringify(getPreviewJsonLd(), null, 2);
 
   return (
     <div className="space-y-5">
@@ -82,11 +100,35 @@ export function SchemaPanel({
         </select>
       </FormField>
 
+      {/* Custom Schema JSON Editor Textarea */}
+      <FormField label="Custom JSON-LD Schema (Optional Override)">
+        <div className="space-y-1">
+          <textarea
+            value={schema.customSchemaJson || ''}
+            onChange={e => onChange('customSchemaJson', e.target.value)}
+            placeholder='e.g. {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Custom Product Schema"
+}'
+            rows={8}
+            className={`w-full text-xs font-mono p-3 border rounded-lg bg-white focus:outline-hidden leading-relaxed ${
+              isValidJson ? 'border-slate-200 focus:border-indigo-500' : 'border-red-300 focus:border-red-500'
+            }`}
+          />
+          {!isValidJson && (
+            <p className="text-[10px] text-red-500 font-semibold">
+              ⚠️ Invalid JSON format. Please verify double quotes and braces.
+            </p>
+          )}
+        </div>
+      </FormField>
+
       {/* JSON-LD Code Block Preview */}
       <div>
         <label className="text-xs font-semibold text-slate-700 block mb-2 flex items-center gap-1.5">
           <Code2 className="w-4 h-4 text-indigo-500" />
-          JSON-LD Code Preview (Read-Only)
+          JSON-LD Live Preview {schema.customSchemaJson && schema.customSchemaJson.trim() ? '(Custom Override)' : '(Auto-Generated)'}
         </label>
         <div className="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-[10px] overflow-x-auto max-h-80 leading-relaxed border border-slate-950">
           <pre>{jsonLdString}</pre>

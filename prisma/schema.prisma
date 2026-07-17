@@ -91,6 +91,7 @@ model CaseStudy {
   heroImageAlt           String?
   excerpt                String
   isFeatured             Boolean              @default(false)
+  showMetricsOnTop       Boolean              @default(false)
   serviceIds             String[]
   blogPostIds            String[]
   internalNote           String?
