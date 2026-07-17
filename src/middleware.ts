@@ -14,6 +14,7 @@ export function middleware(request: NextRequest) {
         origin === 'https://vionsys.com' ||
         origin === 'https://www.vionsys.com' ||
         origin.endsWith('.vionsys.com') ||
+        origin === 'https://main.d33xkb3fr4gc4j.amplifyapp.com' ||
         origin.startsWith('http://localhost:') ||
         origin.startsWith('http://127.0.0.1:');
 
