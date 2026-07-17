@@ -257,8 +257,8 @@ export function ContentEditorShell({
 
     if (statusOverride) {
       body.status = statusOverride;
-    } else if (isDraft) {
-      body.status = 'DRAFT';
+    } else {
+      body.status = docData.status || 'DRAFT';
     }
 
     try {
@@ -275,6 +275,10 @@ export function ContentEditorShell({
 
       hasChangesRef.current = false;
       setSaveStatus('saved');
+      
+      if (resData.data?.status) {
+        setDocData(prev => ({ ...prev, status: resData.data.status }));
+      }
       
       // If it was a new document, redirect to the edit path
       if (isNew && resData.data?.id) {
@@ -299,7 +303,7 @@ export function ContentEditorShell({
     setIsPublishing(true);
     try {
       await handleSave(false, 'PUBLISHED');
-      updateField('status', 'PUBLISHED');
+      setDocData(prev => ({ ...prev, status: 'PUBLISHED' }));
     } catch (err) {
       console.error(err);
     } finally {
