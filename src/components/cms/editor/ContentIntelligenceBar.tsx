@@ -46,25 +46,25 @@ export function ContentIntelligenceBar({
     (contentHtml.includes('alt=""') || !contentHtml.includes('alt='));
 
   return (
-    <div className="border border-slate-200 bg-white rounded-xl p-4 flex flex-wrap items-center justify-between gap-6 shadow-xs text-xs">
+    <div className="border border-slate-200 border-l-4 border-l-emerald-400 bg-white rounded-xl p-4 flex flex-wrap items-center justify-between gap-6 shadow-xs text-xs">
       {/* Left side: stats cards */}
       <div className="flex flex-wrap items-center gap-6">
         <div className="flex items-center gap-2 text-slate-600">
-          <FileText className="w-4 h-4 text-indigo-500" />
+          <FileText className="w-4 h-4 text-rose-500" />
           <div>
             <span className="font-semibold text-slate-800">{wordCount}</span> words
           </div>
         </div>
 
         <div className="flex items-center gap-2 text-slate-600">
-          <Clock className="w-4 h-4 text-indigo-500" />
+          <Clock className="w-4 h-4 text-amber-500" />
           <div>
             <span className="font-semibold text-slate-800">{readingTime}</span> min read
           </div>
         </div>
 
         <div className="flex items-center gap-2 text-slate-600">
-          <BookOpen className="w-4 h-4 text-indigo-500" />
+          <BookOpen className="w-4 h-4 text-emerald-500" />
           <div>
             Readability: <span className="font-semibold text-slate-800">{readability.score}</span> ({readability.grade})
           </div>
@@ -72,7 +72,7 @@ export function ContentIntelligenceBar({
 
         {focusKeyword && (
           <div className="flex items-center gap-2 text-slate-600">
-            <ListTodo className="w-4 h-4 text-indigo-500" />
+            <ListTodo className="w-4 h-4 text-yellow-500" />
             <div>
               Keyword Density: <span className="font-semibold text-slate-800">{keywordDensity}%</span> ({keywordCount} times)
             </div>

@@ -460,7 +460,7 @@ export function ContentEditorShell({
             )}
 
             {/* Document Title / Header area */}
-            <div className="space-y-2 pb-4 border-b border-slate-100">
+            <div className="space-y-2 pb-4 border-b border-slate-100 pl-3 border-l-4 border-l-emerald-400">
               <input
                 id="document-title-input"
                 type="text"
@@ -495,14 +495,14 @@ export function ContentEditorShell({
             </div>
 
             {/* Section 1: Client & Project Details */}
-            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
+            <div className="bg-white border border-slate-200 border-l-4 border-l-amber-400 rounded-xl overflow-hidden shadow-2xs">
               <button
                 type="button"
                 onClick={() => toggleSection('client')}
-                className="w-full flex items-center justify-between p-4 hover:bg-slate-50/50 cursor-pointer text-left focus:outline-none"
+                className="w-full flex items-center justify-between p-4 hover:bg-amber-50/40 cursor-pointer text-left focus:outline-none"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="p-1.5 bg-brand-50 rounded-lg text-brand-650">
+                  <div className="p-1.5 bg-amber-50 rounded-lg text-amber-600 ring-1 ring-amber-100">
                     <Briefcase className="w-4 h-4" />
                   </div>
                   <div>
@@ -546,14 +546,14 @@ export function ContentEditorShell({
             </div>
 
             {/* Section 2: Challenge (The Main Editor canvas) */}
-            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
+            <div className="bg-white border border-slate-200 border-l-4 border-l-rose-400 rounded-xl overflow-hidden shadow-2xs">
               <button
                 type="button"
                 onClick={() => toggleSection('challenge')}
-                className="w-full flex items-center justify-between p-4 hover:bg-slate-50/50 cursor-pointer text-left focus:outline-none"
+                className="w-full flex items-center justify-between p-4 hover:bg-rose-50/40 cursor-pointer text-left focus:outline-none"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="p-1.5 bg-brand-50 rounded-lg text-brand-650">
+                  <div className="p-1.5 bg-rose-50 rounded-lg text-rose-600 ring-1 ring-rose-100">
                     <FileText className="w-4 h-4" />
                   </div>
                   <div>
@@ -581,14 +581,14 @@ export function ContentEditorShell({
             </div>
 
             {/* Section 3: Results Metrics */}
-            <div id="document-result-stats-section" className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
+            <div id="document-result-stats-section" className="bg-white border border-slate-200 border-l-4 border-l-emerald-400 rounded-xl overflow-hidden shadow-2xs">
               <button
                 type="button"
                 onClick={() => toggleSection('results')}
-                className="w-full flex items-center justify-between p-4 hover:bg-slate-50/50 cursor-pointer text-left focus:outline-none"
+                className="w-full flex items-center justify-between p-4 hover:bg-emerald-50/40 cursor-pointer text-left focus:outline-none"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="p-1.5 bg-brand-50 rounded-lg text-brand-650">
+                  <div className="p-1.5 bg-emerald-50 rounded-lg text-emerald-600 ring-1 ring-emerald-100">
                     <TrendingUp className="w-4 h-4" />
                   </div>
                   <div>
@@ -652,7 +652,7 @@ export function ContentEditorShell({
                   <button
                     type="button"
                     onClick={handleAddStat}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 rounded-lg active-press transition-all cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-lg active-press transition-all cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     Add Metric
@@ -678,14 +678,14 @@ export function ContentEditorShell({
             </div>
 
             {/* Section 4: Testimonial */}
-            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
+            <div className="bg-white border border-slate-200 border-l-4 border-l-amber-400 rounded-xl overflow-hidden shadow-2xs">
               <button
                 type="button"
                 onClick={() => toggleSection('testimonial')}
-                className="w-full flex items-center justify-between p-4 hover:bg-slate-50/50 cursor-pointer text-left focus:outline-none"
+                className="w-full flex items-center justify-between p-4 hover:bg-amber-50/40 cursor-pointer text-left focus:outline-none"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="p-1.5 bg-brand-50 rounded-lg text-brand-650">
+                  <div className="p-1.5 bg-amber-50 rounded-lg text-amber-600 ring-1 ring-amber-100">
                     <MessageSquare className="w-4 h-4" />
                   </div>
                   <div>
@@ -745,14 +745,14 @@ export function ContentEditorShell({
             </div>
 
             {/* Section 5: CTA Block */}
-            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
+            <div className="bg-white border border-slate-200 border-l-4 border-l-rose-400 rounded-xl overflow-hidden shadow-2xs">
               <button
                 type="button"
                 onClick={() => toggleSection('cta')}
-                className="w-full flex items-center justify-between p-4 hover:bg-slate-50/50 cursor-pointer text-left focus:outline-none"
+                className="w-full flex items-center justify-between p-4 hover:bg-rose-50/40 cursor-pointer text-left focus:outline-none"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="p-1.5 bg-brand-50 rounded-lg text-brand-650">
+                  <div className="p-1.5 bg-rose-50 rounded-lg text-rose-600 ring-1 ring-rose-100">
                     <Link2 className="w-4 h-4" />
                   </div>
                   <div>
@@ -814,14 +814,14 @@ export function ContentEditorShell({
             </div>
 
             {/* Section 6: FAQ Section */}
-            <div id="document-faqs-section" className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
+            <div id="document-faqs-section" className="bg-white border border-slate-200 border-l-4 border-l-yellow-400 rounded-xl overflow-hidden shadow-2xs">
               <button
                 type="button"
                 onClick={() => toggleSection('faqs')}
-                className="w-full flex items-center justify-between p-4 hover:bg-slate-50/50 cursor-pointer text-left focus:outline-none"
+                className="w-full flex items-center justify-between p-4 hover:bg-yellow-50/40 cursor-pointer text-left focus:outline-none"
               >
                 <div className="flex items-center gap-2.5">
-                  <div className="p-1.5 bg-brand-50 rounded-lg text-brand-650">
+                  <div className="p-1.5 bg-yellow-50 rounded-lg text-yellow-600 ring-1 ring-yellow-100">
                     <HelpCircle className="w-4 h-4" />
                   </div>
                   <div>
@@ -873,7 +873,7 @@ export function ContentEditorShell({
                   <button
                     type="button"
                     onClick={handleAddFaq}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 rounded-lg active-press transition-all cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-yellow-700 bg-yellow-50 hover:bg-yellow-100 rounded-lg active-press transition-all cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     Add FAQ
@@ -901,7 +901,7 @@ export function ContentEditorShell({
             )}
 
             {/* Title Area */}
-            <div className="space-y-2">
+            <div className="space-y-2 pl-3 border-l-4 border-l-amber-400">
               <input
                 id="document-title-input"
                 type="text"
@@ -939,7 +939,13 @@ export function ContentEditorShell({
             </div>
 
             {/* RichText Editor Component Canvas */}
-            <div className="flex-1 flex flex-col min-h-[400px] editorjs-wrapper">
+            <div className="flex-1 flex flex-col min-h-[400px] editorjs-wrapper bg-white border border-slate-200 border-l-4 border-l-rose-400 rounded-xl p-5 shadow-2xs">
+              <div className="flex items-center gap-2 mb-3 pb-3 border-b border-slate-100">
+                <div className="p-1.5 bg-rose-50 rounded-lg text-rose-600 ring-1 ring-rose-100">
+                  <FileText className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Content Canvas</span>
+              </div>
               <RichTextEditor
                 initialJson={contentJson}
                 onChange={(html, json, text) => {
