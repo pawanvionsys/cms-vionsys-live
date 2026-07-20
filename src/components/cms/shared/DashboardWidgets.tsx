@@ -21,6 +21,7 @@ interface CardItem {
   sub: string;
   iconType: 'blog' | 'case-study' | 'combined';
   bg: string;
+  accent?: string;
 }
 
 const iconMap = {
@@ -124,12 +125,13 @@ export function DashboardWidgets({ cards, logs }: DashboardWidgetsProps) {
         {cards.map(card => {
           const Icon = iconMap[card.iconType] || Layers;
           const href = card.iconType === 'blog' ? '/blogs' : card.iconType === 'case-study' ? '/case-studies' : '/blogs';
+          const accent = card.accent || 'border-l-emerald-400';
           
           return (
             <Link
               key={card.label}
               href={href}
-              className="p-6 bg-white border border-slate-200 rounded-xl flex items-center justify-between shadow-3xs hover:shadow-xs transition-all duration-200 hover:border-slate-300 hover:bg-slate-50/30 active-press cursor-pointer block"
+              className={`p-6 bg-white border border-slate-200 border-l-4 ${accent} rounded-xl flex items-center justify-between shadow-3xs hover:shadow-xs transition-all duration-200 hover:border-slate-300 hover:bg-slate-50/30 active-press cursor-pointer block`}
             >
               <div className="space-y-1.5">
                 <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider">{card.label}</span>
@@ -151,48 +153,50 @@ export function DashboardWidgets({ cards, logs }: DashboardWidgetsProps) {
         {/* Quick Tools Accordion List */}
         <motion.div
           variants={itemVariants}
-          className="bg-white border border-slate-200 rounded-xl p-6 shadow-3xs space-y-4 lg:col-span-1"
+          className="bg-white border border-slate-200 border-l-4 border-l-rose-400 rounded-xl p-6 shadow-3xs space-y-4 lg:col-span-1"
         >
           <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2 pb-3 border-b border-slate-100">
-            <TrendingUp className="w-4 h-4 text-brand-600 animate-pulse" />
+            <div className="p-1.5 bg-rose-50 rounded-lg text-rose-600 ring-1 ring-rose-100">
+              <TrendingUp className="w-3.5 h-3.5" />
+            </div>
             Publisher Workspace
           </h3>
           <div className="flex flex-col gap-2.5">
             <Link
               href="/blogs/new"
-              className="flex items-center justify-between p-3.5 border border-slate-100 rounded-lg hover:border-brand-200 hover:bg-slate-50/50 transition-all duration-150 text-xs font-bold text-slate-700 active-press shadow-3xs"
+              className="flex items-center justify-between p-3.5 border border-rose-100 rounded-lg hover:border-rose-200 hover:bg-rose-50/40 transition-all duration-150 text-xs font-bold text-slate-700 active-press shadow-3xs"
             >
               <div className="flex items-center gap-2.5">
-                <FileEdit className="w-4 h-4 text-slate-400" />
+                <FileEdit className="w-4 h-4 text-rose-500" />
                 Write new Blog Post
               </div>
-              <span className="text-[9px] font-extrabold bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-sm uppercase tracking-wide">
+              <span className="text-[9px] font-extrabold bg-rose-50 text-rose-600 px-1.5 py-0.5 rounded-sm uppercase tracking-wide">
                 Canvas
               </span>
             </Link>
             
             <Link
               href="/case-studies/new"
-              className="flex items-center justify-between p-3.5 border border-slate-100 rounded-lg hover:border-brand-200 hover:bg-slate-50/50 transition-all duration-150 text-xs font-bold text-slate-700 active-press shadow-3xs"
+              className="flex items-center justify-between p-3.5 border border-emerald-100 rounded-lg hover:border-emerald-200 hover:bg-emerald-50/40 transition-all duration-150 text-xs font-bold text-slate-700 active-press shadow-3xs"
             >
               <div className="flex items-center gap-2.5">
-                <Briefcase className="w-4 h-4 text-slate-400" />
+                <Briefcase className="w-4 h-4 text-emerald-500" />
                 Build Case Study
               </div>
-              <span className="text-[9px] font-extrabold bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-sm uppercase tracking-wide">
+              <span className="text-[9px] font-extrabold bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded-sm uppercase tracking-wide">
                 Repeatable
               </span>
             </Link>
 
             <Link
               href="/seo-tools/sitemap"
-              className="flex items-center justify-between p-3.5 border border-slate-100 rounded-lg hover:border-brand-200 hover:bg-slate-50/50 transition-all duration-150 text-xs font-bold text-slate-700 active-press shadow-3xs"
+              className="flex items-center justify-between p-3.5 border border-amber-100 rounded-lg hover:border-amber-200 hover:bg-amber-50/40 transition-all duration-150 text-xs font-bold text-slate-700 active-press shadow-3xs"
             >
               <div className="flex items-center gap-2.5">
-                <Globe className="w-4 h-4 text-slate-400" />
+                <Globe className="w-4 h-4 text-amber-500" />
                 Verify XML Sitemap
               </div>
-              <span className="text-[9px] font-extrabold bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-sm uppercase tracking-wide">
+              <span className="text-[9px] font-extrabold bg-amber-50 text-amber-600 px-1.5 py-0.5 rounded-sm uppercase tracking-wide">
                 SEO Tools
               </span>
             </Link>
@@ -202,23 +206,31 @@ export function DashboardWidgets({ cards, logs }: DashboardWidgetsProps) {
         {/* Audit Log timeline */}
         <motion.div
           variants={itemVariants}
-          className="bg-white border border-slate-200 rounded-xl p-6 shadow-3xs space-y-4 lg:col-span-2"
+          className="bg-white border border-slate-200 border-l-4 border-l-yellow-400 rounded-xl p-6 shadow-3xs space-y-4 lg:col-span-2"
         >
           <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2 pb-3 border-b border-slate-100">
-            <History className="w-4 h-4 text-brand-600" />
+            <div className="p-1.5 bg-yellow-50 rounded-lg text-yellow-600 ring-1 ring-yellow-100">
+              <History className="w-3.5 h-3.5" />
+            </div>
             Audit Action Timeline
           </h3>
           
           {logs.length === 0 ? (
             <p className="text-xs text-slate-400 text-center py-8">No editorial changes recorded yet.</p>
           ) : (
-            <div className="space-y-3 relative pl-3.5 border-l border-slate-100 py-1">
-              {logs.map((log) => {
+            <div className="space-y-3 relative pl-3.5 border-l border-amber-100 py-1">
+              {logs.map((log, idx) => {
                 const isExpanded = expandedLogId === log.id;
+                const dotColor =
+                  idx % 3 === 0
+                    ? 'border-rose-500'
+                    : idx % 3 === 1
+                      ? 'border-amber-500'
+                      : 'border-emerald-500';
                 return (
-                  <div key={log.id} className="relative flex flex-col gap-1 text-xs border border-slate-100/70 hover:border-slate-200 rounded-lg p-3 hover:bg-slate-50/20 transition-all select-none">
+                  <div key={log.id} className="relative flex flex-col gap-1 text-xs border border-slate-100/70 hover:border-amber-200 rounded-lg p-3 hover:bg-amber-50/20 transition-all select-none">
                     {/* Timeline bullet dot */}
-                    <span className="absolute -left-[19.5px] top-4 w-2 h-2 rounded-full border border-indigo-500 bg-white" />
+                    <span className={`absolute -left-[19.5px] top-4 w-2 h-2 rounded-full border ${dotColor} bg-white`} />
                     
                     <button
                       type="button"
@@ -227,7 +239,7 @@ export function DashboardWidgets({ cards, logs }: DashboardWidgetsProps) {
                     >
                       <span className="truncate pr-2">{log.action.replace(/_/g, ' ')}</span>
                       <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-[9px] font-semibold text-slate-400 uppercase tracking-wide bg-slate-100 px-1.5 py-0.5 rounded-sm">
+                        <span className="text-[9px] font-semibold text-amber-700 uppercase tracking-wide bg-amber-50 px-1.5 py-0.5 rounded-sm border border-amber-100">
                           {getRelativeTime(log.createdAt)}
                         </span>
                         {isExpanded ? (
@@ -239,12 +251,12 @@ export function DashboardWidgets({ cards, logs }: DashboardWidgetsProps) {
                     </button>
 
                     {isExpanded && (
-                      <div className="pt-2.5 mt-2.5 border-t border-slate-100 text-[11px] text-slate-600 space-y-1.5 animate-fade-in leading-relaxed">
+                      <div className="pt-2.5 mt-2.5 border-t border-amber-100 text-[11px] text-slate-600 space-y-1.5 animate-fade-in leading-relaxed">
                         <p>
-                          📝 <span className="font-bold text-slate-750">Details:</span> {log.details}
+                          <span className="font-bold text-slate-750">Details:</span> {log.details}
                         </p>
                         <p className="text-[10px] text-slate-450 font-medium">
-                          👤 Modified by: <span className="text-slate-600 font-bold">{log.user.name}</span>
+                          Modified by: <span className="text-slate-600 font-bold">{log.user.name}</span>
                         </p>
                       </div>
                     )}

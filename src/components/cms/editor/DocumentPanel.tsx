@@ -46,12 +46,12 @@ export function DocumentPanel({
   return (
     <div className="space-y-5">
       {/* Featured/Hero Image */}
-      <div>
+      <div className="pl-2.5 border-l-4 border-l-rose-400">
         <label className="text-xs font-semibold text-slate-700 block mb-2">
           {contentType === 'blog' ? 'Featured Image' : 'Hero Image'}
         </label>
         {data.featuredImage || data.heroImage ? (
-          <div className="relative border border-slate-200 rounded-xl overflow-hidden group">
+          <div className="relative border border-slate-200 rounded-xl overflow-hidden group ring-1 ring-rose-100">
             <img
               src={data.featuredImage || data.heroImage}
               alt={data.featuredImageAlt || data.heroImageAlt || ''}
@@ -79,7 +79,7 @@ export function DocumentPanel({
         ) : (
           <button
             onClick={() => setShowPicker(true)}
-            className="w-full border-2 border-dashed border-slate-200 hover:border-indigo-300 rounded-xl py-8 flex flex-col items-center justify-center text-slate-400 gap-1 hover:text-indigo-500 transition-colors cursor-pointer bg-slate-50/50"
+            className="w-full border-2 border-dashed border-rose-200 hover:border-rose-300 rounded-xl py-8 flex flex-col items-center justify-center text-rose-400 gap-1 hover:text-rose-500 transition-colors cursor-pointer bg-rose-50/40"
           >
             <ImageIcon className="w-6 h-6" />
             <span className="text-[11px] font-semibold">Choose image</span>
@@ -134,21 +134,23 @@ export function DocumentPanel({
       )}
 
       {/* Excerpt */}
-      <FormField
-        label="Excerpt"
-        description={`${(data.excerpt || '').length}/160 characters (Required for SEO tags)`}
-      >
-        <textarea
-          rows={3}
-          placeholder="Brief semantic summary of the post..."
-          value={data.excerpt || ''}
-          onChange={e => onChange('excerpt', e.target.value.substring(0, 160))}
-          className="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-hidden focus:border-indigo-500 resize-none leading-relaxed"
-        />
-      </FormField>
+      <div className="pl-2.5 border-l-4 border-l-amber-400">
+        <FormField
+          label="Excerpt"
+          description={`${(data.excerpt || '').length}/160 characters (Required for SEO tags)`}
+        >
+          <textarea
+            rows={3}
+            placeholder="Brief semantic summary of the post..."
+            value={data.excerpt || ''}
+            onChange={e => onChange('excerpt', e.target.value.substring(0, 160))}
+            className="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg focus:outline-hidden focus:border-indigo-500 resize-none leading-relaxed"
+          />
+        </FormField>
+      </div>
 
       {/* Tags Input */}
-      <div>
+      <div className="pl-2.5 border-l-4 border-l-yellow-400">
         <label className="text-xs font-semibold text-slate-700 block mb-1.5">Tags</label>
         <input
           type="text"
@@ -162,13 +164,13 @@ export function DocumentPanel({
           {(data.tags || []).map((t: string) => (
             <span
               key={t}
-              className="inline-flex items-center gap-1 px-2 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 rounded-md text-[10px] font-semibold"
+              className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-50 text-amber-700 border border-amber-200 rounded-md text-[10px] font-semibold"
             >
               {t}
               <button
                 type="button"
                 onClick={() => handleRemoveTag(t)}
-                className="hover:text-red-500 cursor-pointer"
+                className="hover:text-rose-500 cursor-pointer"
               >
                 <X className="w-2.5 h-2.5" />
               </button>
@@ -178,9 +180,9 @@ export function DocumentPanel({
       </div>
 
       {/* Relations: Related services */}
-      <div>
+      <div className="pl-2.5 border-l-4 border-l-emerald-400">
         <label className="text-xs font-semibold text-slate-700 block mb-1.5">Related Services</label>
-        <div className="border border-slate-200 rounded-lg p-3 max-h-36 overflow-y-auto space-y-1.5 bg-slate-50/20">
+        <div className="border border-slate-200 rounded-lg p-3 max-h-36 overflow-y-auto space-y-1.5 bg-emerald-50/20">
           {services.map(s => {
             const isChecked = (data.serviceIds || []).includes(s.id);
             return (
@@ -196,7 +198,7 @@ export function DocumentPanel({
                       onChange('serviceIds', current.filter((id: string) => id !== s.id));
                     }
                   }}
-                  className="rounded-sm border-slate-350 text-indigo-600"
+                  className="rounded-sm border-slate-350 text-emerald-600"
                 />
                 {s.label}
               </label>
