@@ -63,11 +63,11 @@ export function EditorSidebar({
   isPublishing
 }: EditorSidebarProps) {
   const tabs = [
-    { id: 'doc', icon: FileText, label: 'Doc' },
-    { id: 'seo', icon: Search, label: 'SEO' },
-    { id: 'aeo', icon: Zap, label: 'AEO' },
-    { id: 'schema', icon: Code, label: 'Schema' },
-    { id: 'publish', icon: Globe, label: 'Publish' }
+    { id: 'doc', icon: FileText, label: 'Doc', active: 'text-emerald-700 bg-emerald-50', collapsed: 'bg-emerald-50 text-emerald-600 border border-emerald-100' },
+    { id: 'seo', icon: Search, label: 'SEO', active: 'text-amber-700 bg-amber-50', collapsed: 'bg-amber-50 text-amber-600 border border-amber-100' },
+    { id: 'aeo', icon: Zap, label: 'AEO', active: 'text-yellow-700 bg-yellow-50', collapsed: 'bg-yellow-50 text-yellow-600 border border-yellow-100' },
+    { id: 'schema', icon: Code, label: 'Schema', active: 'text-rose-700 bg-rose-50', collapsed: 'bg-rose-50 text-rose-600 border border-rose-100' },
+    { id: 'publish', icon: Globe, label: 'Publish', active: 'text-emerald-700 bg-emerald-50', collapsed: 'bg-emerald-50 text-emerald-600 border border-emerald-100' }
   ] as const;
 
   return (
@@ -95,7 +95,7 @@ export function EditorSidebar({
                     type="button"
                     onClick={() => setActiveTab(tab.id)}
                     className={`px-2.5 py-1 text-[11px] font-bold rounded-md cursor-pointer transition-colors relative ${
-                      isActive ? 'text-brand-700 bg-brand-50' : 'text-slate-405 hover:text-slate-700'
+                      isActive ? tab.active : 'text-slate-405 hover:text-slate-700'
                     }`}
                     title={tab.label}
                   >
@@ -140,7 +140,7 @@ export function EditorSidebar({
                     setActiveTab(tab.id);
                   }}
                   className={`p-2 rounded-lg text-slate-400 hover:text-slate-700 cursor-pointer active-press ${
-                    isActive ? 'bg-brand-50 text-brand-600 border border-brand-100' : 'hover:bg-slate-50'
+                    isActive ? tab.collapsed : 'hover:bg-slate-50'
                   }`}
                   title={tab.label}
                 >

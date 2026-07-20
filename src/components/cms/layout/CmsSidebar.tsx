@@ -9,8 +9,6 @@ import {
   FileText,
   Briefcase,
   Image,
-  Search,
-  Settings,
   LogOut,
   PenTool,
   PanelLeftClose,
@@ -64,18 +62,6 @@ export function CmsSidebar({ user }: SidebarProps) {
       title: 'Assets',
       items: [
         { label: 'Media Library', icon: Image, path: '/media' },
-      ]
-    },
-    {
-      title: 'Tools',
-      items: [
-        { label: 'SEO Tools', icon: Search, path: '/seo-tools' },
-      ]
-    },
-    {
-      title: 'Config',
-      items: [
-        { label: 'Settings', icon: Settings, path: '/settings' },
       ]
     }
   ];
