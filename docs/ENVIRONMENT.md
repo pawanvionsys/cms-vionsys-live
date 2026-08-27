@@ -26,6 +26,17 @@ ACCESS_KEY_ID=""
 SECRET_ACCESS_KEY=""
 ```
 
+## Environment diagnostics
+
+While logged in, open:
+
+`GET /api/cms/env-check`
+
+Shows which variables are configured, their source (`env` / `default` / `missing`), and masked values for secrets.
+
+In local development only, append `?reveal=1` to see full raw values.
+```
+
 ## Running Locally
 
 1. Set up MongoDB and configure `DATABASE_URL`. For Atlas, use a `mongodb+srv://...` connection string.

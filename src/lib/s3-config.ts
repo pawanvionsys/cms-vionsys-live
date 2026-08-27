@@ -9,7 +9,7 @@ export function getS3Config() {
   const accessKeyId = readEnv('ACCESS_KEY_ID');
   const secretAccessKey = readEnv('SECRET_ACCESS_KEY');
   const region = readEnv('REGION') || 'ap-south-1';
-  const bucket = readEnv('BUCKET') || 'vionsys';
+  const bucket = readEnv('BUCKET') || 'vionsys-wms';
 
   return { accessKeyId, secretAccessKey, region, bucket };
 }
