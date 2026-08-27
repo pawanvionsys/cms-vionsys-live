@@ -18,6 +18,12 @@ CMS_BASE_URL="https://cms.vionsys.com"
 # Revalidation Webhook secrets
 FRONTEND_REVALIDATE_URL="https://www.vionsys.com/api/revalidate/cms"
 FRONTEND_REVALIDATE_SECRET="vionsys-cms-revalidate-secret-2026"
+
+# AWS S3 (media uploads) — required for /api/cms/upload
+REGION="ap-south-1"
+BUCKET="vionsys-wms"
+ACCESS_KEY_ID=""
+SECRET_ACCESS_KEY=""
 ```
 
 ## Running Locally

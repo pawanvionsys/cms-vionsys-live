@@ -1,20 +1,12 @@
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import path from 'path';
 import { siteConfig } from '../../config/site';
 import { AppError } from '../../lib/errors';
-
-// Initialize S3 Client
-const s3Client = new S3Client({
-  region: process.env.REGION || 'ap-south-1',
-  ...(process.env.ACCESS_KEY_ID && process.env.SECRET_ACCESS_KEY ? {
-    credentials: {
-      accessKeyId: process.env.ACCESS_KEY_ID,
-      secretAccessKey: process.env.SECRET_ACCESS_KEY,
-    },
-  } : {}),
-});
-
-const BUCKET_NAME = process.env.BUCKET || 'vionsys';
+import {
+  assertS3Configured,
+  createS3Client,
+  getS3Config,
+} from '../../lib/s3-config';
 
 export class StorageAdapter {
   /**
@@ -25,6 +17,10 @@ export class StorageAdapter {
     filename: string,
     mimeType: string
   ): Promise<{ url: string; filepath: string }> {
+    assertS3Configured();
+
+    const { region, bucket: bucketName } = getS3Config();
+    const s3Client = createS3Client();
     // 1. Validate file extension and mime type
     if (!siteConfig.storage.allowedMimeTypes.includes(mimeType)) {
       throw new AppError(`File type "${mimeType}" is not allowed.`, 'INVALID_MIME_TYPE', 400);
@@ -39,7 +35,7 @@ export class StorageAdapter {
     try {
       await s3Client.send(
         new PutObjectCommand({
-          Bucket: BUCKET_NAME,
+          Bucket: bucketName,
           Key: uniqueName,
           Body: fileBuffer,
           ContentType: mimeType,
@@ -51,7 +47,7 @@ export class StorageAdapter {
     }
 
     // Mapped S3 URL
-    const url = `https://${BUCKET_NAME}.s3.${process.env.REGION || 'ap-south-1'}.amazonaws.com/${uniqueName}`;
+    const url = `https://${bucketName}.s3.${region}.amazonaws.com/${uniqueName}`;
 
     return {
       url,
@@ -64,12 +60,15 @@ export class StorageAdapter {
    */
   static async deleteFile(filepath: string): Promise<void> {
     try {
+      const { bucket: bucketName } = getS3Config();
+      const s3Client = createS3Client();
+
       // Remove leading slash if exists
       const key = filepath.startsWith('/') ? filepath.substring(1) : filepath;
       
       await s3Client.send(
         new DeleteObjectCommand({
-          Bucket: BUCKET_NAME,
+          Bucket: bucketName,
           Key: key,
         })
       );
