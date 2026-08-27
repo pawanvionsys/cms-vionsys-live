@@ -5,8 +5,8 @@ This file outlines the configuration variables needed in a local `.env` file to 
 Create a `.env` file at the root of the `cms` folder:
 
 ```bash
-# Database connections URL
-DATABASE_URL="postgresql://postgres:password@localhost:5432/vionsys_cms?schema=public"
+# Database connections URL (MongoDB — must match prisma/schema.prisma)
+DATABASE_URL="mongodb://localhost:27017/vionsys_cms"
 
 # Session JWT authentication secret key
 JWT_SECRET="vionsys-cms-jwt-super-secret-key-2026"
@@ -16,13 +16,13 @@ VIONSYS_FRONTEND_BASE_URL="https://vionsys.com"
 CMS_BASE_URL="https://cms.vionsys.com"
 
 # Revalidation Webhook secrets
-FRONTEND_REVALIDATE_URL="https://vionsys.com/api/revalidate"
+FRONTEND_REVALIDATE_URL="https://www.vionsys.com/api/revalidate/cms"
 FRONTEND_REVALIDATE_SECRET="vionsys-cms-revalidate-secret-2026"
 ```
 
 ## Running Locally
 
-1. Set up your Postgres database and configure `DATABASE_URL`.
+1. Set up MongoDB and configure `DATABASE_URL`. For Atlas, use a `mongodb+srv://...` connection string.
 2. Generate Prisma Client bindings:
    ```bash
    npx prisma generate

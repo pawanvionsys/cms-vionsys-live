@@ -171,14 +171,15 @@ export function CaseStudyListTable({ caseStudies }: CaseStudyListTableProps) {
                         {new Date(cs.updatedAt).toLocaleDateString()}
                       </td>
                       <td className="py-3.5 px-4 text-right space-x-1 shrink-0">
-                        <Link
+                        <a
                           href={`/api/cms/preview?id=${cs.id}`}
                           target="_blank"
+                          rel="noopener noreferrer"
                           className="inline-flex items-center p-1.5 border border-slate-200 rounded-md text-slate-405 hover:bg-slate-50 hover:text-slate-750 transition-all active-press cursor-pointer"
                           title="Preview Study"
                         >
                           <Eye className="w-3.5 h-3.5" />
-                        </Link>
+                        </a>
                         <Link
                           href={`/case-studies/${cs.id}/edit`}
                           className="inline-flex items-center p-1.5 border border-slate-200 rounded-md text-slate-405 hover:bg-slate-50 hover:text-slate-750 transition-all active-press cursor-pointer"

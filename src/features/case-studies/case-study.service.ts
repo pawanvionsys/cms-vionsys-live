@@ -3,6 +3,7 @@ import { CaseStudyFormInput } from './case-study.validation';
 import { slugify } from '../../lib/slugify';
 import { AppError } from '../../lib/errors';
 import { CaseStudyMapper } from './case-study.mapper';
+import { RevalidationService } from '../publishing/revalidation.service';
 import { Prisma, VersionHistory } from '@prisma/client';
 
 export class CaseStudyService {
@@ -77,7 +78,13 @@ export class CaseStudyService {
 
   static async createCaseStudy(
     authorId: string,
-    input: CaseStudyFormInput & { challengeJson: any; challengeHtml: string; approachJson: any; approachHtml: string }
+    input: CaseStudyFormInput & {
+      challengeJson: any;
+      challengeHtml: string;
+      approachJson: any;
+      approachHtml: string;
+      status?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+    }
   ) {
     const finalSlug = input.slug ? slugify(input.slug) : slugify(input.title);
 
@@ -90,7 +97,7 @@ export class CaseStudyService {
     const metaTitle = input.title.substring(0, 60);
     const metaDesc = input.excerpt ? input.excerpt.substring(0, 160) : input.title.substring(0, 160);
 
-    return prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const cs = await tx.caseStudy.create({
         data: {
           title: input.title,
@@ -111,6 +118,7 @@ export class CaseStudyService {
           challengeJson: input.challengeJson,
           approachHtml: input.approachHtml,
           approachJson: input.approachJson,
+          publishedAt: input.status === 'PUBLISHED' ? new Date() : null,
           authorId,
 
           // Testimonial
@@ -234,6 +242,12 @@ export class CaseStudyService {
 
       return CaseStudyMapper.toAdminJson(finalCs!);
     });
+
+    if (result.publishedAt) {
+      await RevalidationService.onCaseStudyChange(result.slug);
+    }
+
+    return result;
   }
 
   static async updateCaseStudy(
@@ -258,6 +272,9 @@ export class CaseStudyService {
     if (!existing) {
       throw new AppError('Case study not found', 'NOT_FOUND', 404);
     }
+
+    const previousSlug = existing.slug;
+    const wasPublished = existing.publishedAt != null;
 
     const updates: any = {};
     const fields = [
@@ -326,7 +343,7 @@ export class CaseStudyService {
       updates.publishedAt = new Date();
     }
 
-    return runTransactionWithRetry(async (tx: Prisma.TransactionClient) => {
+    const result = await runTransactionWithRetry(async (tx: Prisma.TransactionClient) => {
       // 1. Update main record
       const updated = await tx.caseStudy.update({
         where: { id },
@@ -494,11 +511,28 @@ export class CaseStudyService {
 
       return CaseStudyMapper.toAdminJson(finalCs!);
     });
+
+    if (result.publishedAt || wasPublished) {
+      await RevalidationService.onCaseStudyChange(result.slug, previousSlug);
+    }
+
+    return result;
   }
 
   static async deleteCaseStudy(id: string, userId: string) {
     const cs = await prisma.caseStudy.findUnique({ where: { id } });
     if (!cs) throw new AppError('Case study not found', 'NOT_FOUND', 404);
+
+    const wasLive = cs.publishedAt != null;
+    const slug = cs.slug;
+
+    if (wasLive) {
+      await prisma.redirect.upsert({
+        where: { fromPath: `/case-studies/${slug}` },
+        update: { toPath: '/case-studies', statusCode: 301 },
+        create: { fromPath: `/case-studies/${slug}`, toPath: '/case-studies', statusCode: 301 },
+      });
+    }
 
     await prisma.$transaction([
       prisma.caseStudy.delete({ where: { id } }),
@@ -510,6 +544,10 @@ export class CaseStudyService {
         }
       })
     ]);
+
+    if (wasLive) {
+      await RevalidationService.onCaseStudyDelete(slug);
+    }
 
     return { success: true };
   }

@@ -1,11 +1,21 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 import { env } from '../../lib/env';
 import { SessionPayload } from '../../types/user';
 
-const COOKIE_NAME = 'vionsys_cms_token';
-const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+export const SESSION_COOKIE_NAME = 'vionsys_cms_token';
+
+function sessionCookieOptions(maxAge: number) {
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax' as const,
+    path: '/',
+    maxAge,
+  };
+}
 
 export async function hashPassword(password: string): Promise<string> {
   const salt = await bcrypt.genSalt(10);
@@ -28,32 +38,33 @@ export function verifyToken(token: string): SessionPayload | null {
   }
 }
 
+export function attachSessionCookie(response: NextResponse, payload: SessionPayload): NextResponse {
+  const token = signToken(payload);
+  response.cookies.set(SESSION_COOKIE_NAME, token, sessionCookieOptions(24 * 60 * 60));
+  response.headers.set('Cache-Control', 'private, no-store');
+  return response;
+}
+
+export function clearSessionCookie(response: NextResponse): NextResponse {
+  response.cookies.set(SESSION_COOKIE_NAME, '', sessionCookieOptions(0));
+  response.headers.set('Cache-Control', 'private, no-store');
+  return response;
+}
+
 export async function setSessionCookie(payload: SessionPayload): Promise<void> {
   const token = signToken(payload);
   const cookieStore = await cookies();
-  cookieStore.set(COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/',
-    maxAge: 24 * 60 * 60, // 24 hours
-  });
+  cookieStore.set(SESSION_COOKIE_NAME, token, sessionCookieOptions(24 * 60 * 60));
 }
 
 export async function removeSessionCookie(): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.set(COOKIE_NAME, '', {
-    httpOnly: true,
-    secure: env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    path: '/',
-    maxAge: 0,
-  });
+  cookieStore.set(SESSION_COOKIE_NAME, '', sessionCookieOptions(0));
 }
 
 export async function getSession(): Promise<SessionPayload | null> {
   const cookieStore = await cookies();
-  const tokenCookie = cookieStore.get(COOKIE_NAME);
+  const tokenCookie = cookieStore.get(SESSION_COOKIE_NAME);
   if (!tokenCookie || !tokenCookie.value) return null;
   return verifyToken(tokenCookie.value);
 }

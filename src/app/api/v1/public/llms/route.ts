@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { siteConfig } from '@/config/site';
 import { ApiResponse } from '@/lib/api-response';
+import { validatePublicApiKey } from '@/features/auth/validate-public-api-key';
 
 interface LlmBlogItem {
   title: string;
@@ -16,23 +17,9 @@ interface LlmCaseStudyItem {
   publishedAt: Date | null;
 }
 
-async function validateApiKey(request: NextRequest): Promise<boolean> {
-  const apiKey = request.headers.get('x-vionsys-cms-key');
-  if (!apiKey) return false;
-  if (apiKey === 'vionsys-cms-public-key-dev-2026') return true;
-
-  const activeKey = await prisma.apiKey.findFirst({
-    where: {
-      keyHash: apiKey,
-      isActive: true
-    }
-  });
-  return activeKey !== null;
-}
-
 export async function GET(request: NextRequest) {
   try {
-    const isValid = await validateApiKey(request);
+    const isValid = await validatePublicApiKey(request);
     if (!isValid) {
       return ApiResponse.unauthorized('Missing or invalid API Key.');
     }
@@ -43,6 +30,7 @@ export async function GET(request: NextRequest) {
         select: { title: true, slug: true, excerpt: true }
       }),
       prisma.caseStudy.findMany({
+        where: { publishedAt: { not: null } },
         select: { title: true, slug: true, excerpt: true, publishedAt: true }
       })
     ]);

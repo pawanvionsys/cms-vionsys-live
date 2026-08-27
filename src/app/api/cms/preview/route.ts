@@ -3,8 +3,21 @@ import { prisma } from '@/lib/prisma';
 import { PreviewTokenService } from '@/features/publishing/preview-token.service';
 import { siteConfig } from '@/config/site';
 
+function isRscRequest(request: NextRequest) {
+  return (
+    request.headers.get('rsc') === '1' ||
+    request.headers.get('next-router-prefetch') === '1' ||
+    request.nextUrl.searchParams.has('_rsc')
+  );
+}
+
 export async function GET(request: NextRequest) {
   try {
+    // Next.js Link prefetch follows this redirect as a fetch, which CORS-blocks on vionsys.com.
+    if (isRscRequest(request)) {
+      return new NextResponse(null, { status: 204 });
+    }
+
     const id = request.nextUrl.searchParams.get('id');
     if (!id) {
       return NextResponse.json({ error: 'Missing id parameter' }, { status: 400 });

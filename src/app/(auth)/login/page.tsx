@@ -1,11 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { PenTool, Key, Mail, AlertCircle } from 'lucide-react';
+import { Key, Mail, AlertCircle } from 'lucide-react';
 
 export default function LoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -20,20 +18,20 @@ export default function LoginPage() {
       const response = await fetch('/api/cms/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify({ email, password })
       });
 
-      const data = await response.json();
+      const data = await response.json().catch(() => null);
 
-      if (!response.ok) {
-        throw new Error(data.error?.message || 'Login failed. Invalid credentials.');
+      if (!response.ok || !data?.success) {
+        throw new Error(data?.error?.message || 'Login failed. Invalid credentials.');
       }
 
-      router.push('/dashboard');
-      router.refresh();
+      // Full navigation so the session cookie is sent to /dashboard.
+      window.location.assign('/dashboard');
     } catch (err: any) {
       setError(err.message || 'An error occurred during authentication.');
-    } finally {
       setLoading(false);
     }
   };
@@ -70,6 +68,7 @@ export default function LoginPage() {
               type="email"
               placeholder="editor@vionsys.com"
               required
+              autoComplete="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               className="w-full text-xs px-3 py-2.5 border border-slate-200 bg-slate-50/50 hover:bg-slate-50 focus:bg-white rounded-lg focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/10 transition-all"
@@ -85,6 +84,7 @@ export default function LoginPage() {
               type="password"
               placeholder="••••••••"
               required
+              autoComplete="current-password"
               value={password}
               onChange={e => setPassword(e.target.value)}
               className="w-full text-xs px-3 py-2.5 border border-slate-200 bg-slate-50/50 hover:bg-slate-50 focus:bg-white rounded-lg focus:outline-hidden focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/10 transition-all"
@@ -112,4 +112,3 @@ export default function LoginPage() {
     </main>
   );
 }
-export const dynamic = 'force-dynamic';

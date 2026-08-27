@@ -143,6 +143,7 @@ export class CaseStudyMapper {
       industry: cs.industry,
       engagementType: cs.engagementType,
       publishedAt: cs.publishedAt,
+      status: cs.publishedAt ? 'PUBLISHED' : 'DRAFT',
       heroImage: cs.heroImage,
       heroImageAlt: cs.heroImageAlt,
       excerpt: cs.excerpt,

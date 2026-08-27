@@ -6,11 +6,17 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { StatusBadge } from './StatusBadge';
+import {
+  getBlogLiveUrl,
+  isPublishedContent,
+} from '@/lib/frontend-urls';
 
 interface BlogPostWithRelations {
   id: string;
   title: string;
+  slug: string;
   status: string;
+  publishedAt?: string | Date | null;
   category: { name: string } | null;
   author: { name: string };
   updatedAt: string | Date;
@@ -170,14 +176,26 @@ export function BlogListTable({ posts }: BlogListTableProps) {
                         {new Date(post.updatedAt).toLocaleDateString()}
                       </td>
                       <td className="py-3.5 px-4 text-right space-x-1 shrink-0">
-                        <Link
-                          href={`/api/cms/preview?id=${post.id}`}
-                          target="_blank"
-                          className="inline-flex items-center p-1.5 border border-slate-200 rounded-md text-slate-405 hover:bg-slate-50 hover:text-slate-750 transition-all active-press cursor-pointer"
-                          title="Preview Post"
-                        >
-                          <Eye className="w-3.5 h-3.5" />
-                        </Link>
+                        {isPublishedContent(post.status, post.publishedAt) ? (
+                          <a
+                            href={getBlogLiveUrl(post.slug)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center p-1.5 border border-slate-200 rounded-md text-slate-405 hover:bg-slate-50 hover:text-slate-750 transition-all active-press cursor-pointer"
+                            title="View live on vionsys.com"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                          </a>
+                        ) : (
+                          <Link
+                            href={`/blogs/${post.id}/preview`}
+                            target="_blank"
+                            className="inline-flex items-center p-1.5 border border-slate-200 rounded-md text-slate-405 hover:bg-slate-50 hover:text-slate-750 transition-all active-press cursor-pointer"
+                            title="Preview draft"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                          </Link>
+                        )}
                         <Link
                           href={`/blogs/${post.id}/edit`}
                           className="inline-flex items-center p-1.5 border border-slate-200 rounded-md text-slate-405 hover:bg-slate-50 hover:text-slate-750 transition-all active-press cursor-pointer"

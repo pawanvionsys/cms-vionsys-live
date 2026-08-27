@@ -9,6 +9,7 @@ import { parseHeadingOutline } from '../../lib/heading-outline';
 import { hasPermission } from '../../config/permissions';
 import { AppError } from '../../lib/errors';
 import { BlogMapper } from './blog.mapper';
+import { RevalidationService } from '../publishing/revalidation.service';
 
 export class BlogService {
   static async listBlogs(params: {
@@ -107,7 +108,7 @@ export class BlogService {
     const metaTitle = input.title.substring(0, 60);
     const metaDesc = input.excerpt ? input.excerpt.substring(0, 160) : input.title.substring(0, 160);
 
-    return runTransactionWithRetry(async (tx) => {
+    const result = await runTransactionWithRetry(async (tx) => {
       const blog = await tx.blogPost.create({
         data: {
           title: input.title,
@@ -173,6 +174,12 @@ export class BlogService {
 
       return BlogMapper.toAdminJson(blog);
     });
+
+    if (result.status === 'PUBLISHED') {
+      await RevalidationService.onBlogChange(result.slug);
+    }
+
+    return result;
   }
 
   static async updateBlog(
@@ -194,6 +201,9 @@ export class BlogService {
     if (!existing) {
       throw new AppError('Blog post not found', 'NOT_FOUND', 404);
     }
+
+    const previousSlug = existing.slug;
+    const wasPublished = existing.status === 'PUBLISHED';
 
     const updates: any = {};
     if (input.title !== undefined) updates.title = input.title;
@@ -249,7 +259,7 @@ export class BlogService {
       updates.publishedAt = new Date();
     }
 
-    return runTransactionWithRetry(async (tx) => {
+    const result = await runTransactionWithRetry(async (tx) => {
       const updated = await tx.blogPost.update({
         where: { id },
         data: updates,
@@ -357,11 +367,28 @@ export class BlogService {
 
       return BlogMapper.toAdminJson(finalResult!);
     });
+
+    if (result.status === 'PUBLISHED' || wasPublished) {
+      await RevalidationService.onBlogChange(result.slug, previousSlug);
+    }
+
+    return result;
   }
 
   static async deleteBlog(id: string, userId: string) {
     const blog = await prisma.blogPost.findUnique({ where: { id } });
     if (!blog) throw new AppError('Blog post not found', 'NOT_FOUND', 404);
+
+    const wasLive = blog.status === 'PUBLISHED' || blog.publishedAt != null;
+    const slug = blog.slug;
+
+    if (wasLive) {
+      await prisma.redirect.upsert({
+        where: { fromPath: `/blog/${slug}` },
+        update: { toPath: '/blog', statusCode: 301 },
+        create: { fromPath: `/blog/${slug}`, toPath: '/blog', statusCode: 301 },
+      });
+    }
 
     await prisma.$transaction([
       prisma.blogPost.delete({ where: { id } }),
@@ -373,6 +400,10 @@ export class BlogService {
         },
       }),
     ]);
+
+    if (wasLive) {
+      await RevalidationService.onBlogDelete(slug);
+    }
 
     return { success: true };
   }

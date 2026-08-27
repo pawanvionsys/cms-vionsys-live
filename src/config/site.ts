@@ -3,7 +3,7 @@ export const siteConfig = {
   description: 'Premium no-code publishing platform for Vionsys blogs and case studies.',
   cmsUrl: process.env.CMS_BASE_URL || 'https://cms.vionsys.com',
   frontendUrl: process.env.VIONSYS_FRONTEND_BASE_URL || 'https://vionsys.com',
-  revalidateUrl: process.env.FRONTEND_REVALIDATE_URL || 'https://vionsys.com/api/revalidate',
+  revalidateUrl: process.env.FRONTEND_REVALIDATE_URL || 'https://www.vionsys.com/api/revalidate/cms',
   revalidateSecret: process.env.FRONTEND_REVALIDATE_SECRET || 'vionsys-cms-revalidate-secret-2026',
   
   // Storage Configurations

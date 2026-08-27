@@ -2,27 +2,14 @@ import { NextRequest } from 'next/server';
 import { prisma } from '../../../../../../lib/prisma';
 import { BlogMapper } from '../../../../../../features/blogs/blog.mapper';
 import { ApiResponse } from '../../../../../../lib/api-response';
-
-async function validateApiKey(request: NextRequest): Promise<boolean> {
-  const apiKey = request.headers.get('x-vionsys-cms-key');
-  if (!apiKey) return false;
-  if (apiKey === 'vionsys-cms-public-key-dev-2026') return true;
-
-  const activeKey = await prisma.apiKey.findFirst({
-    where: {
-      keyHash: apiKey,
-      isActive: true
-    }
-  });
-  return activeKey !== null;
-}
+import { validatePublicApiKey } from '../../../../../../features/auth/validate-public-api-key';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const isValid = await validateApiKey(request);
+    const isValid = await validatePublicApiKey(request);
     if (!isValid) {
       return ApiResponse.unauthorized('Missing or invalid API Key in header "x-vionsys-cms-key".');
     }

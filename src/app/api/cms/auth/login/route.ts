@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server';
 import { prisma } from '../../../../../lib/prisma';
-import { comparePasswords, setSessionCookie } from '../../../../../features/auth/auth-options';
+import { comparePasswords, attachSessionCookie } from '../../../../../features/auth/auth-options';
 import { ApiResponse } from '../../../../../lib/api-response';
 
 export async function POST(request: NextRequest) {
@@ -11,25 +11,30 @@ export async function POST(request: NextRequest) {
       return ApiResponse.error('MISSING_FIELDS', 'Email and password are required.', null, 400);
     }
 
+    const normalizedEmail = email.toLowerCase().trim();
+
     // Find user in database
     let user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase().trim() }
+      where: { email: normalizedEmail }
     });
 
-    // In development mode, if no user exists, let's seed a default super_admin user
-    if (!user && process.env.NODE_ENV !== 'production') {
-      const bcrypt = require('bcryptjs');
-      const salt = await bcrypt.genSalt(10);
-      const passwordHash = await bcrypt.hash('admin123', salt);
-      
-      user = await prisma.user.create({
-        data: {
-          email: 'admin@vionsys.com',
-          name: 'Super Admin User',
-          passwordHash,
-          role: 'SUPER_ADMIN'
-        }
-      });
+    // Bootstrap the first admin if the database has no users yet.
+    if (!user) {
+      const userCount = await prisma.user.count();
+      if (userCount === 0 && normalizedEmail === 'admin@vionsys.com' && password === 'admin123') {
+        const bcrypt = require('bcryptjs');
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash('admin123', salt);
+
+        user = await prisma.user.create({
+          data: {
+            email: 'admin@vionsys.com',
+            name: 'Super Admin User',
+            passwordHash,
+            role: 'SUPER_ADMIN'
+          }
+        });
+      }
     }
 
     if (!user) {
@@ -42,21 +47,20 @@ export async function POST(request: NextRequest) {
       return ApiResponse.error('INVALID_CREDENTIALS', 'Invalid email or password.', null, 401);
     }
 
-    // Save session
-    await setSessionCookie({
-      userId: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role
-    });
-
-    return ApiResponse.success({
+    const response = ApiResponse.success({
       user: {
         id: user.id,
         email: user.email,
         name: user.name,
         role: user.role
       }
+    });
+
+    return attachSessionCookie(response, {
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role
     });
   } catch (err: any) {
     console.error('Login route error:', err);

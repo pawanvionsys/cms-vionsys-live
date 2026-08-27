@@ -28,7 +28,7 @@ export function middleware(request: NextRequest) {
       const preflight = new NextResponse(null, { status: 204 });
       preflight.headers.set('Access-Control-Allow-Origin', allowedOrigin);
       preflight.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-      preflight.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-api-key');
+      preflight.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-api-key, x-vionsys-cms-key');
       preflight.headers.set('Access-Control-Max-Age', '86400');
       return preflight;
     }
@@ -36,7 +36,7 @@ export function middleware(request: NextRequest) {
     const response = NextResponse.next();
     response.headers.set('Access-Control-Allow-Origin', allowedOrigin);
     response.headers.set('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-api-key');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-api-key, x-vionsys-cms-key');
     return response;
   }
 

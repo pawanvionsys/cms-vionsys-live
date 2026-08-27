@@ -27,6 +27,11 @@ import { EditorSidebar } from './EditorSidebar';
 import { ContentIntelligenceBar } from './ContentIntelligenceBar';
 import { StatusBadge } from '../shared/StatusBadge';
 import { INDUSTRIES_LIST } from '@/config/taxonomy';
+import {
+  getBlogLiveUrl,
+  getCaseStudyLiveUrl,
+  isPublishedContent,
+} from '@/lib/frontend-urls';
 
 interface ContentEditorShellProps {
   id?: string;
@@ -61,7 +66,7 @@ export function ContentEditorShell({
     serviceIds: initialData?.serviceIds || [],
     caseStudyIds: initialData?.caseStudyIds || [],
     contentBriefUrl: initialData?.contentBriefUrl || null,
-    status: initialData?.status || 'DRAFT',
+    status: initialData?.status || (initialData?.publishedAt ? 'PUBLISHED' : 'DRAFT'),
     
     // Case study specific structured fields
     clientName: initialData?.clientName || '',
@@ -224,8 +229,18 @@ export function ContentEditorShell({
   };
 
   // --- SAVE OPERATION ---
-  const handleSave = async (isDraft = true, statusOverride?: string) => {
-    if (isSavingRef.current) return;
+  const handleSave = async (isDraft = true, statusOverride?: string): Promise<boolean> => {
+    if (isSavingRef.current) {
+      if (statusOverride === 'PUBLISHED') {
+        const started = Date.now();
+        while (isSavingRef.current && Date.now() - started < 10000) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        if (isSavingRef.current) return false;
+      } else {
+        return false;
+      }
+    }
     isSavingRef.current = true;
     setIsSaving(true);
     setSaveStatus('saving');
@@ -253,12 +268,14 @@ export function ContentEditorShell({
       body.challengeJson = activeState.contentJson;
       body.approachHtml = initialData?.approachHtml || '';
       body.approachJson = initialData?.approachJson || {};
+      body.heroImage = activeState.docData.featuredImage;
+      body.heroImageAlt = activeState.docData.featuredImageAlt;
     }
 
     if (statusOverride) {
       body.status = statusOverride;
     } else {
-      body.status = docData.status || 'DRAFT';
+      body.status = activeState.docData.status || 'DRAFT';
     }
 
     try {
@@ -278,6 +295,8 @@ export function ContentEditorShell({
       
       if (resData.data?.status) {
         setDocData(prev => ({ ...prev, status: resData.data.status }));
+      } else if (statusOverride) {
+        setDocData(prev => ({ ...prev, status: statusOverride }));
       }
       
       // If it was a new document, redirect to the edit path
@@ -288,10 +307,12 @@ export function ContentEditorShell({
             : `/case-studies/${resData.data.id}/edit`
         );
       }
+      return true;
     } catch (err: any) {
       console.error('Save error:', err);
       setSaveStatus('error');
       setErrorMessage(err.message || 'An error occurred during save.');
+      return false;
     } finally {
       setIsSaving(false);
       isSavingRef.current = false;
@@ -301,9 +322,12 @@ export function ContentEditorShell({
   // --- PUBLISH OPERATION ---
   const handlePublish = async () => {
     setIsPublishing(true);
+    setErrorMessage(null);
     try {
-      await handleSave(false, 'PUBLISHED');
-      setDocData(prev => ({ ...prev, status: 'PUBLISHED' }));
+      const ok = await handleSave(false, 'PUBLISHED');
+      if (ok) {
+        setDocData(prev => ({ ...prev, status: 'PUBLISHED' }));
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -415,15 +439,22 @@ export function ContentEditorShell({
                 <Eye className="w-3.5 h-3.5" />
                 Local Preview
               </Link>
-              <Link
-                href={`/api/cms/preview?id=${id}`}
-                target="_blank"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 border border-slate-200 hover:bg-slate-50 rounded-lg shadow-2xs transition-colors cursor-pointer"
-                title="External Live site redirect preview"
-              >
-                <Globe className="w-3.5 h-3.5" />
-                Live URL
-              </Link>
+              {isPublishedContent(docData.status) && docData.slug && (
+                <a
+                  href={
+                    contentType === 'blog'
+                      ? getBlogLiveUrl(docData.slug)
+                      : getCaseStudyLiveUrl(docData.slug)
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 border border-slate-200 hover:bg-slate-50 rounded-lg shadow-2xs transition-colors cursor-pointer"
+                  title="View published page on vionsys.com"
+                >
+                  <Globe className="w-3.5 h-3.5" />
+                  Live URL
+                </a>
+              )}
             </>
           )}
           
