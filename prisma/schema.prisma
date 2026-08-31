@@ -71,9 +71,12 @@ model BlogPost {
   category           Category?        @relation(fields: [categoryId], references: [id])
   tags               Tag[]            @relation(fields: [tagIds], references: [id])
   tagIds             String[]
-  seoMeta            SeoMeta?
-  aeoGeoMeta         AeoGeoMeta?
-  schemaSettings     SchemaSettings?
+  seoMetaId          String?          @unique
+  seoMeta            SeoMeta?         @relation(fields: [seoMetaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  aeoGeoMetaId       String?          @unique
+  aeoGeoMeta         AeoGeoMeta?      @relation(fields: [aeoGeoMetaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  schemaSettingsId   String?          @unique
+  schemaSettings     SchemaSettings?  @relation(fields: [schemaSettingsId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   versions           VersionHistory[]
 }
 
@@ -121,10 +124,13 @@ model CaseStudy {
   resultStats            ResultStat[]
   processSteps           ProcessStep[]
   mediaGallery           MediaGalleryItem[]
-  seoMeta                SeoMeta?
-  aeoGeoMeta             AeoGeoMeta?
-  schemaSettings         SchemaSettings?
-  versions           VersionHistory[]
+  seoMetaId              String?              @unique
+  seoMeta                SeoMeta?             @relation(fields: [seoMetaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  aeoGeoMetaId           String?              @unique
+  aeoGeoMeta             AeoGeoMeta?          @relation(fields: [aeoGeoMetaId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  schemaSettingsId       String?              @unique
+  schemaSettings         SchemaSettings?      @relation(fields: [schemaSettingsId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  versions               VersionHistory[]
   faqs                   CaseStudyFaq[]
 }
 
@@ -177,10 +183,8 @@ model MediaGalleryItem {
 
 model SeoMeta {
   id                String     @id @default(uuid()) @map("_id")
-  blogPostId        String?    @unique
-  blogPost          BlogPost?  @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
-  caseStudyId       String?    @unique
-  caseStudy         CaseStudy? @relation(fields: [caseStudyId], references: [id], onDelete: Cascade)
+  blogPost          BlogPost?
+  caseStudy         CaseStudy?
   title             String
   description       String
   focusKeyword      String
@@ -196,10 +200,8 @@ model SeoMeta {
 
 model AeoGeoMeta {
   id                 String     @id @default(uuid()) @map("_id")
-  blogPostId         String?    @unique
-  blogPost           BlogPost?  @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
-  caseStudyId        String?    @unique
-  caseStudy          CaseStudy? @relation(fields: [caseStudyId], references: [id], onDelete: Cascade)
+  blogPost           BlogPost?
+  caseStudy          CaseStudy?
   directAnswerPrompt String?
   snippetCandidate   String? // max 50 words
   peopleAlsoAsk      Json?      // list of Q&A objects
@@ -213,10 +215,8 @@ model AeoGeoMeta {
 
 model SchemaSettings {
   id               String     @id @default(uuid()) @map("_id")
-  blogPostId       String?    @unique
-  blogPost         BlogPost?  @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
-  caseStudyId      String?    @unique
-  caseStudy        CaseStudy? @relation(fields: [caseStudyId], references: [id], onDelete: Cascade)
+  blogPost         BlogPost?
+  caseStudy        CaseStudy?
   type             String     // e.g. "BlogPosting", "CaseStudy"
   customSchemaJson Json?      // Overrides/additions
 }

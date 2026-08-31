@@ -419,9 +419,9 @@ export class CaseStudyService {
       }
 
       // 5. Update SEO
-      if (input.seo) {
+      if (input.seo && updated.seoMetaId) {
         await tx.seoMeta.update({
-          where: { caseStudyId: id },
+          where: { id: updated.seoMetaId },
           data: {
             title: input.seo.title || updated.title,
             description: input.seo.description || updated.excerpt,
@@ -439,9 +439,9 @@ export class CaseStudyService {
       }
 
       // 6. Update AEO/GEO
-      if (input.aeoGeo) {
+      if (input.aeoGeo && updated.aeoGeoMetaId) {
         await tx.aeoGeoMeta.update({
-          where: { caseStudyId: id },
+          where: { id: updated.aeoGeoMetaId },
           data: {
             directAnswerPrompt: input.aeoGeo.directAnswerPrompt || null,
             snippetCandidate: input.aeoGeo.snippetCandidate || null,
@@ -457,9 +457,9 @@ export class CaseStudyService {
       }
 
       // 7. Update Schema Settings
-      if (input.schema) {
+      if (input.schema && updated.schemaSettingsId) {
         await tx.schemaSettings.update({
-          where: { caseStudyId: id },
+          where: { id: updated.schemaSettingsId },
           data: {
             type: input.schema.type || 'CaseStudy/WebPage',
             customSchemaJson: input.schema.customSchemaJson || null

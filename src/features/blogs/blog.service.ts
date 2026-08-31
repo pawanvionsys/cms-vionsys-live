@@ -274,9 +274,9 @@ export class BlogService {
       });
 
       // Update SEO
-      if (input.seo) {
+      if (input.seo && updated.seoMetaId) {
         await tx.seoMeta.update({
-          where: { blogPostId: id },
+          where: { id: updated.seoMetaId },
           data: {
             title: input.seo.title || updated.title,
             description: input.seo.description || updated.excerpt,
@@ -294,9 +294,9 @@ export class BlogService {
       }
 
       // Update AEO/GEO
-      if (input.aeoGeo) {
+      if (input.aeoGeo && updated.aeoGeoMetaId) {
         await tx.aeoGeoMeta.update({
-          where: { blogPostId: id },
+          where: { id: updated.aeoGeoMetaId },
           data: {
             directAnswerPrompt: input.aeoGeo.directAnswerPrompt || null,
             snippetCandidate: input.aeoGeo.snippetCandidate || null,
@@ -312,9 +312,9 @@ export class BlogService {
       }
 
       // Update Schema Settings
-      if (input.schema) {
+      if (input.schema && updated.schemaSettingsId) {
         await tx.schemaSettings.update({
-          where: { blogPostId: id },
+          where: { id: updated.schemaSettingsId },
           data: {
             type: input.schema.type || 'BlogPosting',
             customSchemaJson: input.schema.customSchemaJson || null,
