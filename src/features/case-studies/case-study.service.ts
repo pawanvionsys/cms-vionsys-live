@@ -4,6 +4,7 @@ import { slugify } from '../../lib/slugify';
 import { AppError } from '../../lib/errors';
 import { CaseStudyMapper } from './case-study.mapper';
 import { RevalidationService } from '../publishing/revalidation.service';
+import { createDefaultContentMeta } from '../../lib/content-meta';
 import { Prisma, VersionHistory } from '@prisma/client';
 
 export class CaseStudyService {
@@ -98,6 +99,13 @@ export class CaseStudyService {
     const metaDesc = input.excerpt ? input.excerpt.substring(0, 160) : input.title.substring(0, 160);
 
     const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      const metaIds = await createDefaultContentMeta(tx, {
+        title: metaTitle,
+        description: metaDesc,
+        focusKeyword: input.clientName || 'vionsys',
+        schemaType: 'CaseStudy/WebPage',
+      });
+
       const cs = await tx.caseStudy.create({
         data: {
           title: input.title,
@@ -120,6 +128,9 @@ export class CaseStudyService {
           approachJson: input.approachJson,
           publishedAt: input.status === 'PUBLISHED' ? new Date() : null,
           authorId,
+          seoMetaId: metaIds.seoMetaId,
+          aeoGeoMetaId: metaIds.aeoGeoMetaId,
+          schemaSettingsId: metaIds.schemaSettingsId,
 
           // Testimonial
           testimonialQuote: input.testimonialQuote || null,
@@ -133,31 +144,6 @@ export class CaseStudyService {
           ctaBody: input.ctaBody || null,
           ctaButtonLabel: input.ctaButtonLabel || null,
           ctaButtonUrl: input.ctaButtonUrl || null,
-
-          seoMeta: {
-            create: {
-              title: metaTitle,
-              description: metaDesc,
-              focusKeyword: input.clientName || 'vionsys',
-              secondaryKeywords: [],
-              index: true,
-              follow: true,
-              twitterCardType: 'summary_large_image'
-            }
-          },
-          aeoGeoMeta: {
-            create: {
-              directAnswerPrompt: '',
-              snippetCandidate: '',
-              keyTakeaways: [],
-              allowAiCrawler: true
-            }
-          },
-          schemaSettings: {
-            create: {
-              type: 'CaseStudy/WebPage'
-            }
-          }
         },
         include: {
           author: true,

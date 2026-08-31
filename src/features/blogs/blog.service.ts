@@ -10,6 +10,7 @@ import { hasPermission } from '../../config/permissions';
 import { AppError } from '../../lib/errors';
 import { BlogMapper } from './blog.mapper';
 import { RevalidationService } from '../publishing/revalidation.service';
+import { createDefaultContentMeta } from '../../lib/content-meta';
 
 export class BlogService {
   static async listBlogs(params: {
@@ -109,6 +110,13 @@ export class BlogService {
     const metaDesc = input.excerpt ? input.excerpt.substring(0, 160) : input.title.substring(0, 160);
 
     const result = await runTransactionWithRetry(async (tx) => {
+      const metaIds = await createDefaultContentMeta(tx, {
+        title: metaTitle,
+        description: metaDesc,
+        focusKeyword: input.title.split(' ')[0] || 'vionsys',
+        schemaType: 'BlogPosting',
+      });
+
       const blog = await tx.blogPost.create({
         data: {
           title: input.title,
@@ -129,30 +137,9 @@ export class BlogService {
           authorId,
           categoryId: input.categoryId || null,
           publishedAt: input.status === 'PUBLISHED' ? new Date() : null,
-          seoMeta: {
-            create: {
-              title: metaTitle,
-              description: metaDesc,
-              focusKeyword: input.title.split(' ')[0] || 'vionsys',
-              secondaryKeywords: [],
-              index: true,
-              follow: true,
-              twitterCardType: 'summary_large_image',
-            },
-          },
-          aeoGeoMeta: {
-            create: {
-              directAnswerPrompt: '',
-              snippetCandidate: '',
-              keyTakeaways: [],
-              allowAiCrawler: true,
-            },
-          },
-          schemaSettings: {
-            create: {
-              type: 'BlogPosting',
-            },
-          },
+          seoMetaId: metaIds.seoMetaId,
+          aeoGeoMetaId: metaIds.aeoGeoMetaId,
+          schemaSettingsId: metaIds.schemaSettingsId,
         },
         include: {
           author: true,
