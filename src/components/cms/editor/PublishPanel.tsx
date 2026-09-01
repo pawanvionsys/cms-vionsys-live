@@ -57,8 +57,8 @@ export function PublishPanel({
         list.push({ type: 'blocker', message: 'Featured image is missing Alt text.', field: 'featuredImageAlt' });
       }
     } else {
-      if (data.heroImage && (!data.heroImageAlt || !data.heroImageAlt.trim())) {
-        list.push({ type: 'blocker', message: 'Hero image is missing Alt text.', field: 'heroImageAlt' });
+      if (data.featuredImage && (!data.featuredImageAlt || !data.featuredImageAlt.trim())) {
+        list.push({ type: 'blocker', message: 'Hero image is missing Alt text.', field: 'featuredImageAlt' });
       }
       if (!data.clientName || !data.clientName.trim()) {
         list.push({ type: 'blocker', message: 'Client Name is required.', field: 'clientName' });

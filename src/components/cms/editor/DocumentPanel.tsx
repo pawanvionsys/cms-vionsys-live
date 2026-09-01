@@ -13,6 +13,7 @@ interface DocumentPanelProps {
   caseStudies?: { id: string; title: string }[];
   blogPosts?: { id: string; title: string }[];
   contentType: 'blog' | 'case-study';
+  onImageSelected?: (url: string, alt: string) => void;
 }
 
 export function DocumentPanel({
@@ -22,7 +23,8 @@ export function DocumentPanel({
   services,
   caseStudies = [],
   blogPosts = [],
-  contentType
+  contentType,
+  onImageSelected
 }: DocumentPanelProps) {
   const [showPicker, setShowPicker] = useState(false);
   const [tagInput, setTagInput] = useState('');
@@ -50,16 +52,17 @@ export function DocumentPanel({
         <label className="text-xs font-semibold text-slate-700 block mb-2">
           {contentType === 'blog' ? 'Featured Image' : 'Hero Image'}
         </label>
-        {data.featuredImage || data.heroImage ? (
+        {data.featuredImage ? (
           <div className="relative border border-slate-200 rounded-xl overflow-hidden group ring-1 ring-rose-100">
             <img
-              src={data.featuredImage || data.heroImage}
-              alt={data.featuredImageAlt || data.heroImageAlt || ''}
+              src={data.featuredImage}
+              alt={data.featuredImageAlt || ''}
               className="w-full h-32 object-cover"
             />
             <button
               onClick={() => {
-                onChange(contentType === 'blog' ? 'featuredImage' : 'heroImage', null);
+                onChange('featuredImage', null);
+                onChange('featuredImageAlt', null);
               }}
               className="absolute top-2 right-2 p-1 bg-slate-900/60 hover:bg-slate-950 text-white rounded-full transition-colors cursor-pointer"
             >
@@ -70,8 +73,8 @@ export function DocumentPanel({
                 id="document-image-alt-input"
                 type="text"
                 placeholder="Alt text (Required to publish)"
-                value={data.featuredImageAlt || data.heroImageAlt || ''}
-                onChange={e => onChange(contentType === 'blog' ? 'featuredImageAlt' : 'heroImageAlt', e.target.value)}
+                value={data.featuredImageAlt || ''}
+                onChange={e => onChange('featuredImageAlt', e.target.value)}
                 className="w-full text-[11px] px-3 py-1.5 border border-slate-200 rounded-lg focus:outline-hidden focus:border-indigo-500"
               />
             </div>
@@ -223,8 +226,9 @@ export function DocumentPanel({
         isOpen={showPicker}
         onClose={() => setShowPicker(false)}
         onSelect={(url, alt) => {
-          onChange(contentType === 'blog' ? 'featuredImage' : 'heroImage', url);
-          onChange(contentType === 'blog' ? 'featuredImageAlt' : 'heroImageAlt', alt);
+          onChange('featuredImage', url);
+          onChange('featuredImageAlt', alt || '');
+          onImageSelected?.(url, alt || '');
         }}
       />
     </div>

@@ -205,7 +205,11 @@ export function ContentEditorShell({
 
   // Handle any field update
   const updateField = (field: string, value: any) => {
-    setDocData(prev => ({ ...prev, [field]: value }));
+    setDocData(prev => {
+      const next = { ...prev, [field]: value };
+      docDataRef.current = { ...docDataRef.current, docData: next };
+      return next;
+    });
     hasChangesRef.current = true;
     setSaveStatus('unsaved');
   };
@@ -268,8 +272,8 @@ export function ContentEditorShell({
       body.challengeJson = activeState.contentJson;
       body.approachHtml = initialData?.approachHtml || '';
       body.approachJson = initialData?.approachJson || {};
-      body.heroImage = activeState.docData.featuredImage;
-      body.heroImageAlt = activeState.docData.featuredImageAlt;
+      body.heroImage = activeState.docData.featuredImage ?? null;
+      body.heroImageAlt = activeState.docData.featuredImageAlt ?? null;
     }
 
     if (statusOverride) {
@@ -298,6 +302,20 @@ export function ContentEditorShell({
       } else if (statusOverride) {
         setDocData(prev => ({ ...prev, status: statusOverride }));
       }
+
+      if (contentType === 'case-study' && resData.data) {
+        setDocData(prev => ({
+          ...prev,
+          featuredImage: resData.data.heroImage ?? prev.featuredImage,
+          featuredImageAlt: resData.data.heroImageAlt ?? prev.featuredImageAlt,
+        }));
+      } else if (contentType === 'blog' && resData.data) {
+        setDocData(prev => ({
+          ...prev,
+          featuredImage: resData.data.featuredImage ?? prev.featuredImage,
+          featuredImageAlt: resData.data.featuredImageAlt ?? prev.featuredImageAlt,
+        }));
+      }
       
       // If it was a new document, redirect to the edit path
       if (isNew && resData.data?.id) {
@@ -317,6 +335,17 @@ export function ContentEditorShell({
       setIsSaving(false);
       isSavingRef.current = false;
     }
+  };
+
+  const persistHeroImage = (url: string, alt: string) => {
+    const nextDocData = {
+      ...docDataRef.current.docData,
+      featuredImage: url,
+      featuredImageAlt: alt,
+    };
+    docDataRef.current = { ...docDataRef.current, docData: nextDocData };
+    setDocData(nextDocData);
+    void handleSave(true);
   };
 
   // --- PUBLISH OPERATION ---
@@ -1019,6 +1048,7 @@ export function ContentEditorShell({
           contentType={contentType}
           onSaveDraft={() => handleSave(true)}
           onPublish={handlePublish}
+          onImageSelected={id ? persistHeroImage : undefined}
           isSaving={isSaving}
           isPublishing={isPublishing}
         />

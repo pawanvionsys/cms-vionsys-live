@@ -36,6 +36,7 @@ interface EditorSidebarProps {
   contentType: 'blog' | 'case-study';
   onSaveDraft: () => void;
   onPublish: () => void;
+  onImageSelected?: (url: string, alt: string) => void;
   isSaving: boolean;
   isPublishing: boolean;
 }
@@ -59,6 +60,7 @@ export function EditorSidebar({
   contentType,
   onSaveDraft,
   onPublish,
+  onImageSelected,
   isSaving,
   isPublishing
 }: EditorSidebarProps) {
@@ -170,6 +172,7 @@ export function EditorSidebar({
                     categories={categories}
                     services={services}
                     contentType={contentType}
+                    onImageSelected={onImageSelected}
                   />
                 )}
                 {activeTab === 'seo' && (
@@ -193,7 +196,7 @@ export function EditorSidebar({
                     excerpt={data.excerpt}
                     slug={data.slug}
                     contentType={contentType}
-                    featuredImage={contentType === 'blog' ? data.featuredImage : data.heroImage}
+                    featuredImage={data.featuredImage}
                     clientName={data.clientName}
                     industry={data.industry}
                   />
