@@ -1,6 +1,5 @@
 import { prisma, runTransactionWithRetry } from '../../lib/prisma';
 import { BlogFormInput } from './blog.validation';
-import { VersionHistory } from '@prisma/client';
 import { slugify } from '../../lib/slugify';
 import { calculateReadingTime } from '../../lib/reading-time';
 import { calculateReadability } from '../../lib/readability';
@@ -11,6 +10,10 @@ import { AppError } from '../../lib/errors';
 import { BlogMapper } from './blog.mapper';
 import { RevalidationService } from '../publishing/revalidation.service';
 import { createDefaultContentMeta } from '../../lib/content-meta';
+import {
+  hasBlogContentChanged,
+  recordBlogVersionHistory,
+} from '../../lib/version-history';
 
 export class BlogService {
   static async listBlogs(params: {
@@ -191,6 +194,7 @@ export class BlogService {
 
     const previousSlug = existing.slug;
     const wasPublished = existing.status === 'PUBLISHED';
+    const shouldRecordVersion = hasBlogContentChanged(existing, input);
 
     const updates: any = {};
     if (input.title !== undefined) updates.title = input.title;
@@ -246,7 +250,7 @@ export class BlogService {
       updates.publishedAt = new Date();
     }
 
-    const result = await runTransactionWithRetry(async (tx) => {
+    await runTransactionWithRetry(async (tx) => {
       const updated = await tx.blogPost.update({
         where: { id },
         data: updates,
@@ -309,28 +313,6 @@ export class BlogService {
         });
       }
 
-      // Record Version History
-      await tx.versionHistory.create({
-        data: {
-          blogPostId: id,
-          contentJson: updated.contentJson || {},
-          contentHtml: updated.contentHtml,
-          authorId,
-        },
-      });
-
-      // Keep only last 20 versions
-      const versions = await tx.versionHistory.findMany({
-        where: { blogPostId: id },
-        orderBy: { createdAt: 'desc' },
-      });
-      if (versions.length > 20) {
-        const toDeleteIds = versions.slice(20).map((v: VersionHistory) => v.id);
-        await tx.versionHistory.deleteMany({
-          where: { id: { in: toDeleteIds } },
-        });
-      }
-
       await tx.activityLog.create({
         data: {
           userId: authorId,
@@ -338,22 +320,30 @@ export class BlogService {
           details: `Updated blog post: "${updated.title}" (${id})`,
         },
       });
-
-      // Refetch with updated sub-models
-      const finalResult = await tx.blogPost.findUnique({
-        where: { id },
-        include: {
-          author: true,
-          category: true,
-          tags: true,
-          seoMeta: true,
-          aeoGeoMeta: true,
-          schemaSettings: true,
-        },
-      });
-
-      return BlogMapper.toAdminJson(finalResult!);
     });
+
+    if (shouldRecordVersion) {
+      await recordBlogVersionHistory({
+        blogPostId: id,
+        authorId,
+        contentJson: input.contentJson ?? existing.contentJson ?? {},
+        contentHtml: input.contentHtml ?? existing.contentHtml,
+      });
+    }
+
+    const finalResult = await prisma.blogPost.findUnique({
+      where: { id },
+      include: {
+        author: true,
+        category: true,
+        tags: true,
+        seoMeta: true,
+        aeoGeoMeta: true,
+        schemaSettings: true,
+      },
+    });
+
+    const result = BlogMapper.toAdminJson(finalResult!);
 
     if (result.status === 'PUBLISHED' || wasPublished) {
       await RevalidationService.onBlogChange(result.slug, previousSlug);

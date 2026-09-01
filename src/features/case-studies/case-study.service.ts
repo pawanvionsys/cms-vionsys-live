@@ -5,7 +5,11 @@ import { AppError } from '../../lib/errors';
 import { CaseStudyMapper } from './case-study.mapper';
 import { RevalidationService } from '../publishing/revalidation.service';
 import { createDefaultContentMeta } from '../../lib/content-meta';
-import { Prisma, VersionHistory } from '@prisma/client';
+import {
+  hasCaseStudyContentChanged,
+  recordCaseStudyVersionHistory,
+} from '../../lib/version-history';
+import { Prisma } from '@prisma/client';
 
 export class CaseStudyService {
   static async listCaseStudies(params: {
@@ -98,7 +102,7 @@ export class CaseStudyService {
     const metaTitle = input.title.substring(0, 60);
     const metaDesc = input.excerpt ? input.excerpt.substring(0, 160) : input.title.substring(0, 160);
 
-    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    const result = await runTransactionWithRetry(async (tx: Prisma.TransactionClient) => {
       const metaIds = await createDefaultContentMeta(tx, {
         title: metaTitle,
         description: metaDesc,
@@ -211,29 +215,30 @@ export class CaseStudyService {
         }
       });
 
-      // Refetch with all relations
-      const finalCs = await tx.caseStudy.findUnique({
-        where: { id: cs.id },
-        include: {
-          author: true,
-          resultStats: true,
-          processSteps: true,
-          mediaGallery: true,
-          seoMeta: true,
-          aeoGeoMeta: true,
-          schemaSettings: true,
-          faqs: true
-        }
-      });
-
-      return CaseStudyMapper.toAdminJson(finalCs!);
+      return cs.id;
     });
 
-    if (result.publishedAt) {
-      await RevalidationService.onCaseStudyChange(result.slug);
+    const finalCs = await prisma.caseStudy.findUnique({
+      where: { id: result },
+      include: {
+        author: true,
+        resultStats: true,
+        processSteps: true,
+        mediaGallery: true,
+        seoMeta: true,
+        aeoGeoMeta: true,
+        schemaSettings: true,
+        faqs: true
+      }
+    });
+
+    const mapped = CaseStudyMapper.toAdminJson(finalCs!);
+
+    if (mapped.publishedAt) {
+      await RevalidationService.onCaseStudyChange(mapped.slug);
     }
 
-    return result;
+    return mapped;
   }
 
   static async updateCaseStudy(
@@ -261,6 +266,7 @@ export class CaseStudyService {
 
     const previousSlug = existing.slug;
     const wasPublished = existing.publishedAt != null;
+    const shouldRecordVersion = hasCaseStudyContentChanged(existing, input);
 
     const updates: any = {};
     const fields = [
@@ -329,7 +335,7 @@ export class CaseStudyService {
       updates.publishedAt = new Date();
     }
 
-    const result = await runTransactionWithRetry(async (tx: Prisma.TransactionClient) => {
+    await runTransactionWithRetry(async (tx: Prisma.TransactionClient) => {
       // 1. Update main record
       const updated = await tx.caseStudy.update({
         where: { id },
@@ -453,26 +459,6 @@ export class CaseStudyService {
         });
       }
 
-      // 8. Capture Version History
-      await tx.versionHistory.create({
-        data: {
-          caseStudyId: id,
-          contentJson: { challenge: updated.challengeJson, approach: updated.approachJson },
-          contentHtml: `<h2>Challenge</h2>${updated.challengeHtml}<h2>Approach</h2>${updated.approachHtml}`,
-          authorId
-        }
-      });
-
-      // Maintain max 20 versions
-      const versions = await tx.versionHistory.findMany({
-        where: { caseStudyId: id },
-        orderBy: { createdAt: 'desc' }
-      });
-      if (versions.length > 20) {
-        const toDeleteIds = versions.slice(20).map((v: VersionHistory) => v.id);
-        await tx.versionHistory.deleteMany({ where: { id: { in: toDeleteIds } } });
-      }
-
       await tx.activityLog.create({
         data: {
           userId: authorId,
@@ -480,23 +466,34 @@ export class CaseStudyService {
           details: `Updated case study: "${updated.title}" (${id})`
         }
       });
-
-      const finalCs = await tx.caseStudy.findUnique({
-        where: { id },
-        include: {
-          author: true,
-          resultStats: true,
-          processSteps: true,
-          mediaGallery: true,
-          seoMeta: true,
-          aeoGeoMeta: true,
-          schemaSettings: true,
-          faqs: true
-        }
-      });
-
-      return CaseStudyMapper.toAdminJson(finalCs!);
     });
+
+    if (shouldRecordVersion) {
+      await recordCaseStudyVersionHistory({
+        caseStudyId: id,
+        authorId,
+        challengeJson: input.challengeJson ?? existing.challengeJson,
+        approachJson: input.approachJson ?? existing.approachJson,
+        challengeHtml: input.challengeHtml ?? existing.challengeHtml,
+        approachHtml: input.approachHtml ?? existing.approachHtml,
+      });
+    }
+
+    const finalCs = await prisma.caseStudy.findUnique({
+      where: { id },
+      include: {
+        author: true,
+        resultStats: true,
+        processSteps: true,
+        mediaGallery: true,
+        seoMeta: true,
+        aeoGeoMeta: true,
+        schemaSettings: true,
+        faqs: true
+      }
+    });
+
+    const result = CaseStudyMapper.toAdminJson(finalCs!);
 
     if (result.publishedAt || wasPublished) {
       await RevalidationService.onCaseStudyChange(result.slug, previousSlug);
